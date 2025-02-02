@@ -41,4 +41,25 @@ public class EventController {
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
 	}
 
+	@GetMapping("/{id}")
+	public EntityModel<Event> getEvent(@PathVariable Long id) {
+		Event event = eventService.getEvent(id);
+		return assembler.toModel(event);
+	}
+
+	@DeleteMapping("/{id}")
+	ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+		eventService.deleteEvent(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping("/{id}")
+	ResponseEntity<?> replaceEvent(@RequestBody Event newEvent, @PathVariable Long id) {
+		Event updatedEvent = eventService.updateEvent(id, newEvent);
+		EntityModel<Event> entityModel = assembler.toModel(updatedEvent);
+		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
+	}
+
+
+
 }
