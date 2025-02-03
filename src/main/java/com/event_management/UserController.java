@@ -1,12 +1,15 @@
 package com.event_management;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,53 +18,46 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.hateoas.IanaLinkRelations;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/event")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 @Validated
-public class EventController {
-	private final EventService eventService;
-	private final EventModelAssembler assembler;
-
+class UserController {
+	private final UserService userservice;
+	private final UserModelAssembler assembler;		
+	
 	@GetMapping
-	CollectionModel<EntityModel<Event>> getAllEvents() {
-	List<EntityModel<Event>> events = eventService.getAllEvents().stream()
+	CollectionModel<EntityModel<User>> getAllUsers() {
+	List<EntityModel<User>> users = userservice.getAllUsers().stream()
 		.map(assembler::toModel) 
 		.collect(Collectors.toList());
-		return CollectionModel.of(events, linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel());
+		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
 	}
 
 	@PostMapping
-	ResponseEntity<?> newEvent(@RequestBody Event newEvent) {
-		EntityModel<Event> entityModel = assembler.toModel(eventService.createEvent(newEvent));
+	ResponseEntity<?> newUser(@RequestBody User newUser) {
+		EntityModel<User> entityModel = assembler.toModel(userservice.createUser(newUser));
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
 	}
 
 	@GetMapping("/{id}")
-	public EntityModel<Event> getEvent(@PathVariable Long id) {
-		Event event = eventService.getEvent(id);
-		return assembler.toModel(event);
+	public EntityModel<User> getUser(@PathVariable int id) {
+		User user = userservice.getUser(id);
+		return assembler.toModel(user);
 	}
 
 	@DeleteMapping("/{id}")
-	ResponseEntity<?> deleteEvent(@PathVariable Long id) {
-		eventService.deleteEvent(id);
+	ResponseEntity<?> deleteUser(@PathVariable int id) {
+		userservice.deleteUser(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{id}")
-	ResponseEntity<?> replaceEvent(@RequestBody Event newEvent, @PathVariable Long id) {
-		Event updatedEvent = eventService.updateEvent(id, newEvent);
-		EntityModel<Event> entityModel = assembler.toModel(updatedEvent);
+	ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable int id) {
+		User updatedUser = userservice.updateUser(newUser, id);
+		EntityModel<User> entityModel = assembler.toModel(updatedUser);
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
 	}
-
-
-
 }
