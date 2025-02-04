@@ -1,8 +1,10 @@
 package com.event_management;
 
+import java.util.UUID;
+
 class EventNotFoundException extends RuntimeException {
 
-	EventNotFoundException(Long id) {
+	EventNotFoundException(UUID id) {
 		super("Could not find event " + id);
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.hateoas.IanaLinkRelations;
 import lombok.RequiredArgsConstructor;
@@ -44,19 +45,19 @@ public class EventController {
 	}
 
 	@GetMapping("/{id}")
-	public EntityModel<Event> getEvent(@PathVariable Long id) {
+	public EntityModel<Event> getEvent(@PathVariable UUID id) {
 		Event event = eventService.getEvent(id);
 		return assembler.toModel(event);
 	}
 
 	@DeleteMapping("/{id}")
-	ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+	ResponseEntity<?> deleteEvent(@PathVariable UUID id) {
 		eventService.deleteEvent(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{id}")
-	ResponseEntity<?> replaceEvent(@RequestBody Event newEvent, @PathVariable Long id) {
+	ResponseEntity<?> replaceEvent(@RequestBody Event newEvent, @PathVariable UUID id) {
 		Event updatedEvent = eventService.updateEvent(id, newEvent);
 		EntityModel<Event> entityModel = assembler.toModel(updatedEvent);
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);

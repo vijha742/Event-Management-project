@@ -1,6 +1,7 @@
 package com.event_management;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class EventService {
 		return eventRepo.findAll();
 	}
 
-	public Event getEvent(Long Id) {
+	public Event getEvent(UUID Id) {
 		return eventRepo.findById(Id)
 			.orElseThrow(() -> new EventNotFoundException(Id));
 	}
@@ -26,7 +27,7 @@ public class EventService {
 		return eventRepo.save(event);
 	}
 
-	public Event updateEvent(Long Id, Event event) {
+	public Event updateEvent(UUID Id, Event event) {
 		Event existingEvent = eventRepo.findById(Id)
 			.orElseGet(() -> eventRepo.save(event));
 		existingEvent.setName(event.getName());
@@ -39,7 +40,7 @@ public class EventService {
 		return eventRepo.save(existingEvent);
 	}
 
-	public void deleteEvent(Long Id) {
+	public void deleteEvent(UUID Id) {
 		eventRepo.deleteById(Id);
 	}
 }

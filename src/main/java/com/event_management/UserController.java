@@ -1,6 +1,7 @@
 package com.event_management;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -43,19 +44,19 @@ class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public EntityModel<User> getUser(@PathVariable int id) {
+	public EntityModel<User> getUser(@PathVariable UUID id) {
 		User user = userservice.getUser(id);
 		return assembler.toModel(user);
 	}
 
 	@DeleteMapping("/{id}")
-	ResponseEntity<?> deleteUser(@PathVariable int id) {
+	ResponseEntity<?> deleteUser(@PathVariable UUID id) {
 		userservice.deleteUser(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{id}")
-	ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable int id) {
+	ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable UUID id) {
 		User updatedUser = userservice.updateUser(newUser, id);
 		EntityModel<User> entityModel = assembler.toModel(updatedUser);
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
