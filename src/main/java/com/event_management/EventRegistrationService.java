@@ -14,9 +14,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EventRegistrationService {
 
-    private EventRegistrationRepository eventRegistrationRepository;
-    private UserRepository userRepository;
-    private EventRepository eventRepository;
+    private final EventRegistrationRepository eventRegistrationRepository;
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
 
     public void registerUserForEvent(UUID userId, UUID eventId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));

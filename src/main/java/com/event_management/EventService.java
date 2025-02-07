@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class EventService {
 	private final EventRepository eventRepo;
+	private final UserRepository userRepo;
 
 	public List<Event> getAllEvents() {
 		return eventRepo.findAll();
@@ -23,9 +24,19 @@ public class EventService {
 			.orElseThrow(() -> new EventNotFoundException(Id));
 	}
 
-	public Event createEvent(Event event) {
-		return eventRepo.save(event);
-	}
+	public Event createEvent(EventDTO eventDTO, User admin) {
+        Event event = new Event();
+        event.setName(eventDTO.getName());
+        event.setDescription(eventDTO.getDescription());
+        event.setLocation(eventDTO.getLocation());
+        event.setDate(eventDTO.getDate());
+        event.setTime(eventDTO.getTime());
+        event.setBanner(eventDTO.getBanner());
+        event.setAdmin(admin); 
+        event.setParticipants(eventDTO.getParticipants());
+        return eventRepo.save(event);
+    }
+
 
 	public Event updateEvent(UUID Id, Event event) {
 		Event existingEvent = eventRepo.findById(Id)

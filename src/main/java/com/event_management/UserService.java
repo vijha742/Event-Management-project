@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -16,11 +17,11 @@ class UserService {
 		return userRepository.save(user);
 	}
 	
-	public User getUser(int id) {
+	public User getUser(UUID id) {
 		return userRepository.findById(id).orElse(null);
 	}
 	
-	public User updateUser(User user, int id) {
+	public User updateUser(User user, UUID id) {
 		User existingUser = userRepository.findById(id)
 			.orElseGet(() -> userRepository.save(user));
 		existingUser.setName(user.getName());
@@ -30,7 +31,7 @@ class UserService {
 		return userRepository.save(existingUser);
 	}
 	
-	public void deleteUser(int id) {
+	public void deleteUser(UUID id) {
 		userRepository.deleteById(id);
 	}
 	

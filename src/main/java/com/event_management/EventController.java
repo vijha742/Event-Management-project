@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class EventController {
 	private final EventService eventService;
 	private final EventModelAssembler assembler;
-
+	private final UserRepository userRepository;
 	@GetMapping
 	CollectionModel<EntityModel<Event>> getAllEvents() {
 	List<EntityModel<Event>> events = eventService.getAllEvents().stream()
@@ -39,8 +40,15 @@ public class EventController {
 	}
 
 	@PostMapping
-	ResponseEntity<?> newEvent(@RequestBody Event newEvent) {
-		EntityModel<Event> entityModel = assembler.toModel(eventService.createEvent(newEvent));
+	ResponseEntity<?> newEvent(@RequestBody EventDTO newEvent) {
+		Optional<User> adminUser = userRepository.findById(newEvent.getAdmin());
+        
+        if (adminUser.isEmpty()) {
+            return ResponseEntity.badRequest().body("Admin user not found");
+        }
+
+        Event createdEvent = eventService.createEvent(newEvent, adminUser.get());
+		EntityModel<Event> entityModel = assembler.toModel(createdEvent);
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
 	}
 

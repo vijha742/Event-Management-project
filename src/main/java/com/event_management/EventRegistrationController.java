@@ -15,7 +15,7 @@ import java.util.UUID;
 @Validated
 public class EventRegistrationController {
 
-    private EventRegistrationService eventRegistrationService;
+    private final EventRegistrationService eventRegistrationService;
 
     @PostMapping("/register/{userId}/{eventId}")
     public String registerUser(@PathVariable UUID userId, @PathVariable UUID eventId) {
