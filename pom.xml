@@ -70,6 +70,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-mapstruct-binding</artifactId>
+        <version>0.2.0</version>
+        <scope>provided</scope>
+    </dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -83,10 +89,10 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<annotationProcessorPaths>
-						<path>
+						<annotationProcessorpath>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-						</path>
+						</annotationProcessorpath>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>

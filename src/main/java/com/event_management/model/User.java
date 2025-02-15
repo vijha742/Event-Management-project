@@ -1,27 +1,29 @@
-package com.event_management;
+package com.event_management.model;
 
 import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+
+import com.event_management.model.Role;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "users")
-@Builder
-class User {
+public class User {
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private UUID id;
@@ -32,12 +34,14 @@ class User {
 	@Column(nullable = false)
 	private String password;
 	@Column(nullable = false)
-	private String role;
+	private String profilePic;
 	private String phoneNo;
 	private String rollNo;
 	private int studyYear;
 	private String department;
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EventRegistration> eventRegistrations;
+	private Set<EventRegistration> eventRegistrations;
 }

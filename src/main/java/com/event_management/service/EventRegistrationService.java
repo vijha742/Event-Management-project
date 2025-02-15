@@ -1,13 +1,20 @@
-package com.event_management;
+package com.event_management.service;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.UUID;
+
+import com.event_management.repository.EventRepository;
+import com.event_management.repository.UserRepository;
+import com.event_management.repository.EventRegistrationRepository;
+import com.event_management.model.Event;
+import com.event_management.model.User;
+import com.event_management.model.EventRegistration;
+import com.event_management.model.RegistrationStatus;
 
 @Service
 @Slf4j

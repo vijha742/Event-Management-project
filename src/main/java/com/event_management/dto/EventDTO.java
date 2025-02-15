@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

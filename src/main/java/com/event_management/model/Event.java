@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,21 +37,26 @@ public class Event {
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private UUID id;
+
 	private String badge;
 	private String description;
 	private String location;
+
 	@Column(nullable = false)
 	private LocalDate date;
+	
 	@Column(nullable = false)
 	private LocalTime time;
+	
 	private String banner;
 	private String logo;
 	private Set<String> socialLinks;
-//	private Set<UUID> authorizedUsers;
+	private Set<UUID> authorizedUsers;
 
 	@ManyToOne
 	@JoinColumn(name = "admin_id", nullable = false)
 	private User admin;
+
 	private int participants;
 
 	@JdbcTypeCode(SqlTypes.JSON)
@@ -69,8 +75,8 @@ public class Event {
 	@Column(name = "timeline_data", columnDefinition = "jsonb")
 	private List<TimelineItem> timeline;
 
-	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EventRegistration> eventRegistrations;
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.Lazy)
+	private Set<EventRegistration> eventRegistrations;
 }
 
 @Data

@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.event_management.model.Event;
+import com.event_management.model.User;
 
 @NoArgsConstructor
 @AllArgsConstructor
