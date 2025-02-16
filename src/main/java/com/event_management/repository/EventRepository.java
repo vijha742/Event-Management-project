@@ -11,6 +11,6 @@ import com.event_management.model.Event;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
-		@Query("SELECT e FROM Event e LEFT JOIN FETCH e.admin LEFT JOIN FETCH e.eventRegistrations")
+		@Query("SELECT e FROM Event e LEFT JOIN FETCH e.admin LEFT JOIN FETCH e.eventRegistrations er LEFT JOIN FETCH er.user")
 		List<Event> findAllWithAdminAndRegistrations();
 }

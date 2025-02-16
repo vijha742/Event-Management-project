@@ -1,21 +1,20 @@
 package com.event_management.service;
-import java.util.ArrayList;
 //HACK: Work on this... 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.event_management.assembler.EventModelAssembler;
 import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventDTO;
+import com.event_management.exception.EventNotFoundException;
 import com.event_management.model.Event;
 import com.event_management.model.User;
 import com.event_management.repository.EventRepository;
 import com.event_management.repository.UserRepository;
-import com.event_management.assembler.EventModelAssembler;
-import com.event_management.exception.EventNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +29,22 @@ public class EventService {
 	private final UserRepository userRepo;
         private final EventModelAssembler eventAssembler;
 
+        @Transactional(readOnly = true)
 	public List<Event> getAllEvents() {
 		return List.copyOf(eventRepo.findAllWithAdminAndRegistrations());
 	}
+        
+        @Transactional(readOnly = true)
+	public List<EventBaseDTO> getAllEventsBaseDTOs() {
+                List<Event> event = eventRepo.findAllWithAdminAndRegistrations();
+		return event.stream().map(this::convertToBaseDTO) // Convert each event
+                 .collect(Collectors.toList());
+	}
 
+        @Transactional(readOnly = true)
 	public List<EventBaseDTO> getAllBaseEventsAsDTO() {
 		List<Event> events = eventRepo.findAllWithAdminAndRegistrations();
-		return new CopyOnWriteArrayList<>(eventAssembler.toDOList(events)); 
+		return List.copyOf(eventAssembler.toDOList(events)); 
 	}
 
 	public Event getEvent(UUID Id) {

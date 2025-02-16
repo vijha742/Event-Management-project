@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.event_management.model.User;
 import com.event_management.repository.UserRepository;
@@ -20,7 +21,8 @@ public class UserService {
 	public User createUser(User user) {
 		return userRepository.save(user);
 	}
-	
+
+	@Transactional
 	public User getUser(UUID id) {
 		return userRepository.findById(id).orElse(null);
 	}

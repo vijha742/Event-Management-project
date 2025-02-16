@@ -38,8 +38,8 @@ public class EventController {
 
     @GetMapping
     public CollectionModel<EntityModel<Event>> getAllEvents() {
-        List<EntityModel<Event>> events =
-                eventService.getAllEvents().stream()
+        List<Event> base =  eventService.getAllEvents();
+        List<EntityModel<Event>> events = base.stream()
                         .map(assembler::toModel)
                         .collect(Collectors.toList());
         return CollectionModel.of(
@@ -48,9 +48,8 @@ public class EventController {
 
     @GetMapping("/base")
     public CollectionModel<EntityModel<EventBaseDTO>> getAllBaseEvents() {
-        List<EntityModel<EventBaseDTO>> eventDTOs =
-                eventService.getAllEvents().stream()
-                        .map(event -> eventService.convertToBaseDTO(event))
+        List<EventBaseDTO> base = eventService.getAllEventsBaseDTOs();
+        List<EntityModel<EventBaseDTO>> eventDTOs = base.stream()
                         .map(assembler::toModel)
                         .collect(Collectors.toList());
 

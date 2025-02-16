@@ -75,7 +75,7 @@ public class Event {
 	@Column(name = "timeline_data", columnDefinition = "jsonb")
 	private List<TimelineItem> timeline;
 
-	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.Lazy)
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.LAZY)
 	private Set<EventRegistration> eventRegistrations;
 }
 
