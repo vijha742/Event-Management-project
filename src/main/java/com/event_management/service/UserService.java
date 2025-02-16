@@ -1,22 +1,28 @@
-package com.event_management;
+package com.event_management.service;
+
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.event_management.model.User;
+import com.event_management.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-class UserService {
+public class UserService {
 	private final UserRepository userRepository;
 	
 	public User createUser(User user) {
 		return userRepository.save(user);
 	}
-	
+
+	@Transactional
 	public User getUser(UUID id) {
 		return userRepository.findById(id).orElse(null);
 	}

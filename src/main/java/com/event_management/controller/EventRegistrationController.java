@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
+
+import com.event_management.service.EventRegistrationService;
+import com.event_management.model.EventRegistration;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")

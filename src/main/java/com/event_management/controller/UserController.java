@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,24 +21,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
+import com.event_management.service.UserService;
+import com.event_management.assembler.UserModelAssembler;
+import com.event_management.model.User;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 @Validated
-class UserController {
+public class UserController {
 	private final UserService userservice;
 	private final UserModelAssembler assembler;		
 	
 	@GetMapping
-	CollectionModel<EntityModel<User>> getAllUsers() {
-	List<EntityModel<User>> users = userservice.getAllUsers().stream()
-		.map(assembler::toModel) 
-		.collect(Collectors.toList());
+	public CollectionModel<EntityModel<User>> getAllUsers() {
+		List<User> base = userservice.getAllUsers();
+		List<EntityModel<User>> users = base.stream()
+																		.map(assembler::toModel) 
+																		.collect(Collectors.toList());
+
 		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
 	}
 
 	@PostMapping
-	ResponseEntity<?> newUser(@RequestBody User newUser) {
+	public ResponseEntity<?> newUser(@RequestBody User newUser) {
 		EntityModel<User> entityModel = assembler.toModel(userservice.createUser(newUser));
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
 	}
@@ -50,13 +56,13 @@ class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+	public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
 		userservice.deleteUser(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{id}")
-	ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable UUID id) {
+	public ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable UUID id) {
 		User updatedUser = userservice.updateUser(newUser, id);
 		EntityModel<User> entityModel = assembler.toModel(updatedUser);
 		return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);

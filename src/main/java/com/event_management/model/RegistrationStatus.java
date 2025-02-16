@@ -1,4 +1,4 @@
-package com.event_management;
+package com.event_management.model;
 
 public enum RegistrationStatus {
     UPCOMING, ATTENDED
