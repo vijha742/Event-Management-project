@@ -53,6 +53,10 @@ public class Event {
 	private Set<String> socialLinks;
 	private Set<UUID> authorizedUsers;
 
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "authorized_users", columnDefinition = "jsonb")
+	private List<Coordinators> authorized_users;
+
 	@ManyToOne
 	@JoinColumn(name = "admin_id", nullable = false)
 	private User admin;
@@ -143,5 +147,13 @@ class TimelineItem {
 class FaqItem {
     private String question;
     private String answer;
+}
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class Coordinators {
+    private String role;
+    private UUID id;
 }
 
