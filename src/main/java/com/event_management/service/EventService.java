@@ -1,6 +1,7 @@
 package com.event_management.service;
 //HACK: Work on this... 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import com.event_management.dto.EventDTO;
 import com.event_management.exception.EventNotFoundException;
 import com.event_management.model.Event;
 import com.event_management.model.User;
+import com.event_management.repository.EventRegistrationRepository;
 import com.event_management.repository.EventRepository;
 import com.event_management.repository.UserRepository;
 
@@ -28,6 +30,7 @@ public class EventService {
 	private final EventRepository eventRepo;
 	private final UserRepository userRepo;
         private final EventModelAssembler eventAssembler;
+	private final EventRegistrationRepository eventRegistrationRepo;
 
         @Transactional(readOnly = true)
 	public List<Event> getAllEvents() {
@@ -81,7 +84,7 @@ public class EventService {
     }
 
 
-/*	public Event updateEvent(UUID Id, Event event) {
+	public Event updateEvent(UUID Id, Event event) {
 		Event existingEvent = eventRepo.findById(Id)
 			.orElseGet(() -> eventRepo.save(event));
 		existingEvent.setName(event.getName());
@@ -94,9 +97,13 @@ public class EventService {
 		return eventRepo.save(existingEvent);
 	}
 
-	public void deleteEvent(UUID Id) {
-		eventRepo.deleteById(Id);
+	public Optional<Event> findById(UUID id) {
+		return eventRepo.findById(id);
 	}
-	*/
+
+	public void deleteEvent(Event event) {
+		eventRegistrationRepo.deleteEvent(event);
+		eventRepo.delete(event);
+	}
 }
 

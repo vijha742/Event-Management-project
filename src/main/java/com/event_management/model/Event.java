@@ -51,7 +51,6 @@ public class Event {
 	private String banner;
 	private String logo;
 	private Set<String> socialLinks;
-	private Set<UUID> authorizedUsers;
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "authorized_users", columnDefinition = "jsonb")
@@ -79,7 +78,7 @@ public class Event {
 	@Column(name = "timeline_data", columnDefinition = "jsonb")
 	private List<TimelineItem> timeline;
 
-	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.LAZY)
+	@OneToMany(mappedBy = "event", fetch =FetchType.LAZY)
 	private Set<EventRegistration> eventRegistrations;
 }
 
@@ -153,7 +152,7 @@ class FaqItem {
 @NoArgsConstructor
 @AllArgsConstructor
 class Coordinators {
-    private String role;
     private UUID id;
+    private String role;
 }
 
