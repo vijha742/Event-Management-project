@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +45,7 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
+	@OneToMany(mappedBy = "user", fetch=FetchType.LAZY)
 	@JsonManagedReference
 	private Set<EventRegistration> eventRegistrations;
 

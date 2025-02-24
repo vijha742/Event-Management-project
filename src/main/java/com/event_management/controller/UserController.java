@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.event_management.service.UserService;
 import com.event_management.assembler.UserModelAssembler;
+import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.User;
 
 @RestController
@@ -37,6 +38,15 @@ public class UserController {
 	public CollectionModel<EntityModel<User>> getAllUsers() {
 		List<User> base = userservice.getAllUsers();
 		List<EntityModel<User>> users = base.stream()
+																		.map(assembler::toModel) 
+																		.collect(Collectors.toList());
+
+		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
+	}
+	@GetMapping
+	public CollectionModel<EntityModel<UserResponseDTO>> getAllUsersResponse() {
+		List<UserResponseDTO> base = userservice.getAllUsersResponse();
+		List<EntityModel<UserResponseDTO>> users = base.stream()
 																		.map(assembler::toModel) 
 																		.collect(Collectors.toList());
 

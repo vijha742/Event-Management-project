@@ -71,6 +71,7 @@ public class EventService {
 
 	public EventBaseDTO convertToBaseDTO(Event event) {
         EventBaseDTO eventbase = new EventBaseDTO();
+        eventbase.setId(event.getId());
         eventbase.setName(event.getName());
 	eventbase.setBadge(event.getBadge());
         eventbase.setDescription(event.getDescription());
