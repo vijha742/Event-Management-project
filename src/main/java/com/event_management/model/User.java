@@ -49,9 +49,17 @@ public class User {
 	@JsonManagedReference
 	private Set<EventRegistration> eventRegistrations;
 
-	@Override
+ @Override
 	public int hashCode() {
 	  return Objects.hash(id.toString());
+	}
+
+ @Override
+	public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    User user = (User) obj;
+    return Objects.equals(id, user.id);
 	}
 
 }

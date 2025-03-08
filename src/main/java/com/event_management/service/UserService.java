@@ -41,15 +41,15 @@ public User createUser(User user) {
 
 	public UserResponseDTO toUserReturnDTO(User user) {
 		UserResponseDTO userResponse = new UserResponseDTO();
-			userResponse.set(user.getId());
-			userResponse.set(user.getName());
-			userResponse.set(user.getEmail());
-			userResponse.set(user.getProfilePic());
-			userResponse.set(user.getPhoneNo());
-			userResponse.set(user.getRollNo());
-			userResponse.set(user.getStudyYear());
-			userResponse.set(user.getDepartment());
-			userResponse.set(user.getRole());
+			userResponse.setId(user.getId());
+			userResponse.setName(user.getName());
+			userResponse.setEmail(user.getEmail());
+			userResponse.setProfilePic(user.getProfilePic());
+			userResponse.setPhoneNo(user.getPhoneNo());
+			userResponse.setRollNo(user.getRollNo());
+			userResponse.setStudyYear(user.getStudyYear());
+			userResponse.setDepartment(user.getDepartment());
+			userResponse.setRole(user.getRole());
 			return userResponse;
 	}
 	
@@ -60,9 +60,10 @@ public User createUser(User user) {
 	public List<User> getAllUsers() {
 		return userRepository.findAllWithAdminAndRegistrations();
 	}
+	@Transactional(readOnly = true)
 	public List<UserResponseDTO> getAllUsersResponse() {
 		List<User> user = userRepository.findAllWithAdminAndRegistrations();
-		return user.stream().map(this::toUserReturnDTO) // Convert each event
-                 .collect(Collectors.toList());
+		List<UserResponseDTO> responses = user.stream().map(this::toUserReturnDTO).collect(Collectors.toList());
+		return responses;
 	}
 }

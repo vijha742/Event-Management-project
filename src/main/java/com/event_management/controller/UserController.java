@@ -37,13 +37,16 @@ public class UserController {
 	@GetMapping
 	public CollectionModel<EntityModel<User>> getAllUsers() {
 		List<User> base = userservice.getAllUsers();
+		System.out.println("Passed lvl 1");
 		List<EntityModel<User>> users = base.stream()
 																		.map(assembler::toModel) 
 																		.collect(Collectors.toList());
 
+		System.out.println("Passed lvl 2");
 		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
 	}
-	@GetMapping
+
+	@GetMapping("/base")
 	public CollectionModel<EntityModel<UserResponseDTO>> getAllUsersResponse() {
 		List<UserResponseDTO> base = userservice.getAllUsersResponse();
 		List<EntityModel<UserResponseDTO>> users = base.stream()

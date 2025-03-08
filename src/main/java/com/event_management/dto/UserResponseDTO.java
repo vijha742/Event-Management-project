@@ -20,5 +20,4 @@ public class UserResponseDTO {
 		private int studyYear;
 		private String department;
 		private Role role;
-
 }

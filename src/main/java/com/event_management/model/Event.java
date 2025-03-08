@@ -2,14 +2,13 @@ package com.event_management.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,7 +52,7 @@ public class Event {
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "authorized_users", columnDefinition = "jsonb")
-	private List<Coordinators> authorized_users;
+	private List<Coordinators> authorized_users = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "admin_id", nullable = false)
@@ -77,81 +76,15 @@ public class Event {
 	@Column(name = "timeline_data", columnDefinition = "jsonb")
 	private List<TimelineItem> timeline;
 
-	@OneToMany(mappedBy = "event", fetch =FetchType.LAZY)
+	@OneToMany(mappedBy = "event")
 	private Set<EventRegistration> eventRegistrations;
 }
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class AboutData {
-    private String title;
-    private List<AboutSection> sections;
-    private CallToAction callToAction;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class AboutSection {
-    private String title;
-    private String content;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class CallToAction {
-    private String title;
-    private String content;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class GuidelinesData {
-    @JsonProperty("generalRules")
-    private List<String> generalRules;
-    
-    @JsonProperty("technicalGuidelines")
-    private List<String> technicalGuidelines;
-    
-    @JsonProperty("judgingCriteria")
-    private List<String> judgingCriteria;
-    
-    private ResourceInfo resources;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ResourceInfo {
-    private String text;
-    private String link;
-    private String linkText;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class TimelineItem {
-    private String title;
-    private String time;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class FaqItem {
-    private String question;
-    private String answer;
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class Coordinators {
-    private UUID id;
-    private String role;
-}
 

@@ -19,5 +19,6 @@ public class EventDTO {
     private String banner;
     private UUID admin; // ✅ Only UUID instead of full User object
     private int participants;
+    private String badge;
 }
 

@@ -13,15 +13,15 @@ import com.event_management.model.EventRegistration;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/event-registrations")
+@RequestMapping("/registrations")
 @RequiredArgsConstructor
 @Validated
 public class EventRegistrationController {
 
     private final EventRegistrationService eventRegistrationService;
 
-    @PostMapping("/register/{userId}/{eventId}")
-    public String registerUser(@PathVariable UUID userId, @PathVariable UUID eventId) {
+    @PostMapping("/register")
+    public String registerUser(@RequestBody UUID userId, @RequestBody UUID eventId) {
         eventRegistrationService.registerUserForEvent(userId, eventId);
         return "User registered successfully!";
     }

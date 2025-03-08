@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.event_management.assembler.EventModelAssembler;
 import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventDTO;
+import com.event_management.dto.EventResponseDTO;
 import com.event_management.model.Event;
 import com.event_management.repository.UserRepository;
 import com.event_management.service.EventService;
@@ -70,12 +71,12 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEvent(@PathVariable UUID id) {
+    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable UUID id) {
         Event event = eventService.getEvent(id);
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(event);
+        return ResponseEntity.ok( new EventResponseDTO(event));
     }
 
     @PostMapping

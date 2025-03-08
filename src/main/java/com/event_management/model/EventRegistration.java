@@ -30,6 +30,7 @@ public class EventRegistration {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonBackReference
     private Event event;
 
     @Column(name = "registered_at", nullable = false)

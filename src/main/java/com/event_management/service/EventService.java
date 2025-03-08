@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +51,14 @@ public class EventService {
 		return List.copyOf(eventAssembler.toDOList(events)); 
 	}
 
+	@Transactional(readOnly = true)
 	public Event getEvent(UUID Id) {
-		return eventRepo.findById(Id)
-			.orElseThrow(() -> new EventNotFoundException(Id));
+		Event event = eventRepo.findById(Id).orElse(null);
+		if(event != null) {
+			Hibernate.initialize(event.getEventRegistrations());
+			Hibernate.initialize(event.getAuthorized_users());
+		}
+		return event;
 	}
 
 	public Event createEvent(EventDTO eventDTO, User admin) {

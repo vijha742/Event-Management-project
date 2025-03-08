@@ -11,8 +11,6 @@ import com.event_management.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    @Query("SELECT DISTINCT u FROM User u " +
-       "LEFT JOIN FETCH u.eventRegistrations er " +
-       "LEFT JOIN FETCH er.event")
+   @Query("SELECT u FROM User u")
     List<User> findAllWithAdminAndRegistrations();
 }
