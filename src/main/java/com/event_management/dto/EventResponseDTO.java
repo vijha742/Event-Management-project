@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 import com.event_management.model.Event;
 import com.event_management.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public class EventResponseDTO {
 	private String logo;
 	private Set<String> socialLinks;
 	private List<Coordinators> authorized_users;
-	private User admin;
+	private UserResponseDTO admin;
 	private int participants;
 	private AboutData aboutData;
 	private GuidelinesData guidelinesData;
@@ -40,6 +41,7 @@ public class EventResponseDTO {
 	private List<TimelineItem> timeline;
 	private Set<RegistrationEventDTO> eventRegistrations;
 
+    private static final Logger log = LoggerFactory.getLogger(EventResponseDTO.class);
 	public EventResponseDTO(Event event) {
 	    this.name = event.getName();
 	    this.id = event.getId();
@@ -50,21 +52,28 @@ public class EventResponseDTO {
 	    this.time = event.getTime();
 	    this.banner = event.getBanner();
 	    this.logo = event.getLogo();
-	    this.socialLinks = event.getSocialLinks();
+	    log.info("Iterating over SocialLinks");
+	    this.socialLinks = event.getSocialLinks() != null ? event.getSocialLinks() : new HashSet<>();
+	    log.info("Iterating over Auth_users");
 	    this.authorized_users = event.getAuthorized_users() != null 
-        ? event.getAuthorized_users().stream()
+					? event.getAuthorized_users().stream()
 					.map(this::mapCoordinators)
 					.collect(Collectors.toList()) : new ArrayList<>();
-	    this.admin = event.getAdmin();
+	    this.admin = new UserResponseDTO(event.getAdmin());
 	    this.participants = event.getParticipants();
+	    log.info("Iterating over about Data");
 	    this.aboutData = event.getAboutData() != null ? mapAboutData(event.getAboutData()) : new AboutData();
+	    log.info("Iterating over Guidelines_data");
 	    this.guidelinesData = event.getGuidelinesData() != null ? mapGuidelinesData(event.getGuidelinesData()) : new GuidelinesData();
+	    log.info("Iterating over faq");
 	    this.faqData = event.getFaqData() != null ? event.getFaqData().stream()
 				.map(this::mapFaqItem)
 				.collect(Collectors.toList()) : new ArrayList<>();
+	    log.info("Iterating over timeline");
 	    this.timeline = event.getTimeline() != null ? event.getTimeline().stream()
         .map(this::mapTimelineItem)
         .collect(Collectors.toList()) : new ArrayList<>();
+	log.info("Iterating over eventRegistrations");
 	    this.eventRegistrations = event.getEventRegistrations() != null ? event.getEventRegistrations().stream()
 	.map(registration -> new RegistrationEventDTO(registration)).collect(Collectors.toSet()) : new HashSet<>();
 
@@ -83,9 +92,9 @@ public class EventResponseDTO {
 	dtoAboutData.setTitle(modelAboutData.getTitle());
     
     // Map AboutSections
-	dtoAboutData.setSections(modelAboutData.getSections().stream()
+	dtoAboutData.setSections(modelAboutData.getSections() != null ? modelAboutData.getSections().stream()
 	    .map(this::mapAboutSection)
-	    .collect(Collectors.toList()));
+	    .collect(Collectors.toList()) : new ArrayList<>());
     
     // Map CallToAction
 	dtoAboutData.setCallToAction(mapCallToAction(modelAboutData.getCallToAction()));
@@ -112,12 +121,12 @@ public class EventResponseDTO {
 // Helper method to map GuidelinesData
     private GuidelinesData mapGuidelinesData(com.event_management.model.GuidelinesData modelGuidelinesData) {
 	GuidelinesData dtoGuidelinesData = new GuidelinesData();
-	dtoGuidelinesData.setGeneralRules(modelGuidelinesData.getGeneralRules());
-	dtoGuidelinesData.setTechnicalGuidelines(modelGuidelinesData.getTechnicalGuidelines());
-	dtoGuidelinesData.setJudgingCriteria(modelGuidelinesData.getJudgingCriteria());
+	dtoGuidelinesData.setGeneralRules(modelGuidelinesData.getGeneralRules() != null ? modelGuidelinesData.getGeneralRules() : new ArrayList<>());
+	dtoGuidelinesData.setTechnicalGuidelines(modelGuidelinesData.getTechnicalGuidelines() != null ? modelGuidelinesData.getTechnicalGuidelines() : new ArrayList<>());
+	dtoGuidelinesData.setJudgingCriteria(modelGuidelinesData.getJudgingCriteria() != null ? modelGuidelinesData.getJudgingCriteria() : new ArrayList<>());
     
     // Map ResourceInfo
-	dtoGuidelinesData.setResources(mapResourceInfo(modelGuidelinesData.getResources()));
+	dtoGuidelinesData.setResources(mapResourceInfo(modelGuidelinesData.getResources()) != null ? mapResourceInfo(modelGuidelinesData.getResources()) : new ResourceInfo());
     
 	return dtoGuidelinesData;
     }

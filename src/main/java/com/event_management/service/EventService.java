@@ -51,13 +51,9 @@ public class EventService {
 		return List.copyOf(eventAssembler.toDOList(events)); 
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public Event getEvent(UUID Id) {
-		Event event = eventRepo.findById(Id).orElse(null);
-		if(event != null) {
-			Hibernate.initialize(event.getEventRegistrations());
-			Hibernate.initialize(event.getAuthorized_users());
-		}
+		Event event = eventRepo.findByIdWithRegistrations(Id).orElse(null);
 		return event;
 	}
 

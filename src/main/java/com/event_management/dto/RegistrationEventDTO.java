@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 @Data
 public class RegistrationEventDTO {
     private UUID id;
-    private User user;
+    private UserResponseDTO user;
     private LocalDateTime registeredAt;
     private RegistrationStatus status;
 
     public RegistrationEventDTO(EventRegistration registration) {
         this.id = registration.getId();
-        this.user = registration.getUser();
+        this.user = new UserResponseDTO(registration.getUser());
         this.registeredAt = registration.getRegisteredAt();
         this.status = registration.getStatus();
     }

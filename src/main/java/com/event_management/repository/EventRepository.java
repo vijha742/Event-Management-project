@@ -1,6 +1,7 @@
 package com.event_management.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,5 +22,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 		@Transactional
 		@Query("DELETE FROM Event e WHERE e= :event")
 		void delete(@Param("event") Event event);
+
+		@Query("SELECT e FROM Event e LEFT JOIN FETCH e.eventRegistrations WHERE e.id = :id")
+    Optional<Event> findByIdWithRegistrations(@Param("id") UUID id);
 
 }

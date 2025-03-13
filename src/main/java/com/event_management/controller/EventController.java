@@ -59,7 +59,7 @@ public class EventController {
                 events, linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel());
     }
 
-    @GetMapping("/base")
+    @GetMapping("/event-list")
     public CollectionModel<EntityModel<EventBaseDTO>> getAllBaseEvents() {
         List<EventBaseDTO> base = eventService.getAllEventsBaseDTOs();
         List<EntityModel<EventBaseDTO>> eventDTOs = base.stream()
@@ -70,6 +70,7 @@ public class EventController {
                 eventDTOs, linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel());
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDTO> getEvent(@PathVariable UUID id) {
         Event event = eventService.getEvent(id);
