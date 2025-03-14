@@ -22,4 +22,17 @@ public class EventBaseDTO {
     private String adminProfilePic;
     private String adminName;
     private String banner;
+
+    public EventBaseDTO(Event event) {
+        this.setId(event.getId());
+        this.setName(event.getName());
+	this.setBadge(event.getBadge());
+        this.setDescription(event.getDescription());
+        this.setLocation(event.getLocation());
+        this.setDate(event.getDate());
+        this.setTime(event.getTime());
+        this.setBanner(event.getBanner());
+        this.setAdminName(event.getAdmin().getName());
+	this.setAdminProfilePic(event.getAdmin().getProfilePic());
+    }
 }

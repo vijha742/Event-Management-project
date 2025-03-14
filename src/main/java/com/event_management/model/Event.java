@@ -65,6 +65,10 @@ public class Event {
 	private AboutData aboutData;
     
 	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "announcements", columnDefinition = "jsonb")
+	private List<Announcement> announcement;
+
+	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "guidelines_data", columnDefinition = "jsonb")
 	private GuidelinesData guidelinesData;
 

@@ -41,7 +41,7 @@ public class EventService {
         @Transactional(readOnly = true)
 	public List<EventBaseDTO> getAllEventsBaseDTOs() {
                 List<Event> event = eventRepo.findAllWithAdminAndRegistrations();
-		return event.stream().map(this::convertToBaseDTO) // Convert each event
+		return event.stream().map(EventBaseDTO::new) // Convert each event
                  .collect(Collectors.toList());
 	}
 
@@ -72,18 +72,6 @@ public class EventService {
 
 
 	public EventBaseDTO convertToBaseDTO(Event event) {
-        EventBaseDTO eventbase = new EventBaseDTO();
-        eventbase.setId(event.getId());
-        eventbase.setName(event.getName());
-	eventbase.setBadge(event.getBadge());
-        eventbase.setDescription(event.getDescription());
-        eventbase.setLocation(event.getLocation());
-        eventbase.setDate(event.getDate());
-        eventbase.setTime(event.getTime());
-        eventbase.setBanner(event.getBanner());
-        eventbase.setAdminName(event.getAdmin().getName());
-	eventbase.setAdminProfilePic(event.getAdmin().getProfilePic());
-        return eventbase;
     }
 
 

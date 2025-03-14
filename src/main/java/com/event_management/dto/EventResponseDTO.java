@@ -1,6 +1,7 @@
 package com.event_management.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.event_management.model.Announcement;
 import com.event_management.model.Event;
 import com.event_management.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,6 +37,7 @@ public class EventResponseDTO {
 	private List<Coordinators> authorized_users;
 	private UserResponseDTO admin;
 	private int participants;
+	private List<Announcement> announcements;
 	private AboutData aboutData;
 	private GuidelinesData guidelinesData;
 	private List<FaqItem> faqData;
@@ -52,28 +55,22 @@ public class EventResponseDTO {
 	    this.time = event.getTime();
 	    this.banner = event.getBanner();
 	    this.logo = event.getLogo();
-	    log.info("Iterating over SocialLinks");
 	    this.socialLinks = event.getSocialLinks() != null ? event.getSocialLinks() : new HashSet<>();
-	    log.info("Iterating over Auth_users");
 	    this.authorized_users = event.getAuthorized_users() != null 
 					? event.getAuthorized_users().stream()
 					.map(this::mapCoordinators)
 					.collect(Collectors.toList()) : new ArrayList<>();
 	    this.admin = new UserResponseDTO(event.getAdmin());
 	    this.participants = event.getParticipants();
-	    log.info("Iterating over about Data");
+	    this.announcements = event.getAnnouncement() != null ? event.getAnnouncement().stream().map(this::mapAnnouncement).collect(Collectors.toList()) : new ArrayList<>();
 	    this.aboutData = event.getAboutData() != null ? mapAboutData(event.getAboutData()) : new AboutData();
-	    log.info("Iterating over Guidelines_data");
 	    this.guidelinesData = event.getGuidelinesData() != null ? mapGuidelinesData(event.getGuidelinesData()) : new GuidelinesData();
-	    log.info("Iterating over faq");
 	    this.faqData = event.getFaqData() != null ? event.getFaqData().stream()
 				.map(this::mapFaqItem)
 				.collect(Collectors.toList()) : new ArrayList<>();
-	    log.info("Iterating over timeline");
 	    this.timeline = event.getTimeline() != null ? event.getTimeline().stream()
         .map(this::mapTimelineItem)
         .collect(Collectors.toList()) : new ArrayList<>();
-	log.info("Iterating over eventRegistrations");
 	    this.eventRegistrations = event.getEventRegistrations() != null ? event.getEventRegistrations().stream()
 	.map(registration -> new RegistrationEventDTO(registration)).collect(Collectors.toSet()) : new HashSet<>();
 
@@ -156,6 +153,15 @@ public class EventResponseDTO {
 	return dtoTimelineItem;
     }
 
+    private Announcement mapAnnouncement(com.event_management.model.Announcement modelAnnouncement) {
+	Announcement dtoAnnouncement = new Announcement();
+	dtoAnnouncement.setTitle(modelAnnouncement.getTitle());
+	dtoAnnouncement.setDescription(modelAnnouncement.getDescription());
+	dtoAnnouncement.setCreatedAt(modelAnnouncement.getCreatedAt());
+	dtoAnnouncement.setDeadline(modelAnnouncement.getDeadline());
+	return dtoAnnouncement;
+    }
+
 
 
 @Data
@@ -232,6 +238,15 @@ class Coordinators {
     private String role;
 }
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class Announcement {
+    private String title;
+    private String description;
+    private LocalDate createdAt;
+    private LocalDateTime deadline;
+}
 
 }
 

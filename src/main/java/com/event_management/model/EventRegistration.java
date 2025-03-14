@@ -40,5 +40,9 @@ public class EventRegistration {
     @Enumerated(EnumType.STRING)
     private RegistrationStatus status = RegistrationStatus.UPCOMING;
 
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+		private Role role = Role.USER;
+
 }
 
