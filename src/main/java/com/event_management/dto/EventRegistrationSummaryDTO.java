@@ -1,13 +1,16 @@
 package com.event_management.dto;
 
+import com.event_management.model.RegistrationStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.event_management.model.EventRegistration;
 import com.event_management.model.Role;
 
 public class EventRegistrationSummaryDTO {
     private UUID id;
     private EventBaseDTO event;
-    private String status;
+    private RegistrationStatus status;
     private Role role;
     private LocalDateTime registeredAt; 
 

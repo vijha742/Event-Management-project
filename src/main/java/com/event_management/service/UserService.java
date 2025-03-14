@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.event_management.dto.EventRegistrationSummaryDTO;
 import com.event_management.dto.UserDataDTO;
 import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.User;
@@ -28,21 +29,13 @@ public User createUser(User user) {
 	@Transactional
 	public UserDataDTO getUser(UUID id) {
 		User user = userRepository.findById(id).orElse(null);
+    
 		UserDataDTO userData = new UserDataDTO(user);
-		userData.setEventRegistrations(user.getEventRegistrations().stream()
-        .map(reg -> {
-            EventRegistrationSummaryDTO regDto = new EventRegistrationSummaryDTO();
-            
-            EventSummaryDTO eventDto = new EventSummaryDTO();
-            // Map basic event fields
-            regDto.setid(reg.getId());
-						regDto.setStatus(reg.getStatus());
-						regDto.setRole(reg.getRole());
-						regDto.setRegisteredAt(reg.getRegisteredAt());
-						regDto.setEvent(new EventBaseDTO(reg.getEvent()));
-            return regDto;
-        })
-        .collect(Collectors.toList()));
+		userData.setEventRegistrations(
+			user.getEventRegistrations().stream()
+			.map(EventRegistrationSummaryDTO::new)
+			.collect(Collectors.toList())
+		);
 		return userData;
 	}
 

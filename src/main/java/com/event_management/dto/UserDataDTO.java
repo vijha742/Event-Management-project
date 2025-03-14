@@ -1,19 +1,22 @@
 package com.event_management.dto;
 
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
-import com.event_management.model.Role;
 import com.event_management.model.User;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDataDTO {
-    private UserResponseDTO user;
+    private UserResponseDTO userData;
     private List<EventRegistrationSummaryDTO> eventRegistrations;
 
     public UserDataDTO(User user) {
-	UserResponseDTO userData = new UserResponseDTO(user);
-	List<EventRegistrationSummaryDTO> eventRegistrations = new ArrayList<>();
+	this.userData = new UserResponseDTO(user);
+	this.eventRegistrations = new ArrayList<>();
     }
 }
 

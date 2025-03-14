@@ -59,21 +59,16 @@ public class EventService {
 
 	public Event createEvent(EventDTO eventDTO, User admin) {
         Event event = new Event();
-        event.setName(eventDTO.getName());
-        event.setDescription(eventDTO.getDescription());
-        event.setLocation(eventDTO.getLocation());
-        event.setDate(eventDTO.getDate());
-        event.setTime(eventDTO.getTime());
-        event.setBanner(eventDTO.getBanner());
-        event.setAdmin(admin); 
-        event.setParticipants(eventDTO.getParticipants());
-        return eventRepo.save(event);
-    }
-
-
-	public EventBaseDTO convertToBaseDTO(Event event) {
-    }
-
+		event.setName(eventDTO.getName());
+		event.setDescription(eventDTO.getDescription());
+		event.setLocation(eventDTO.getLocation());
+		event.setDate(eventDTO.getDate());
+		event.setTime(eventDTO.getTime());
+		event.setBanner(eventDTO.getBanner());
+		event.setAdmin(admin); 
+		event.setParticipants(eventDTO.getParticipants());
+		return eventRepo.save(event);
+	}
 
 	public Event updateEvent(UUID Id, Event event) {
 		Event existingEvent = eventRepo.findById(Id)

@@ -42,7 +42,7 @@ public class EventRegistration {
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-		private Role role = Role.USER;
+    private Role role = Role.USER;
 
 }
 

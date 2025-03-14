@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import  com.event_management.model.Event;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

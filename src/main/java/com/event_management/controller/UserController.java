@@ -22,7 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import com.event_management.service.UserService;
+import com.event_management.assembler.UserDataDTOModelAssembler;
 import com.event_management.assembler.UserModelAssembler;
+import com.event_management.assembler.UserResponseDTOModelAssembler;
+import com.event_management.dto.UserDataDTO;
 import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.User;
 
@@ -33,6 +36,8 @@ import com.event_management.model.User;
 public class UserController {
 	private final UserService userservice;
 	private final UserModelAssembler assembler;		
+	private final UserResponseDTOModelAssembler responseAssembler;
+	private final UserDataDTOModelAssembler dataAssembler;
 	
 	@GetMapping
 	public CollectionModel<EntityModel<User>> getAllUsers() {
@@ -50,7 +55,7 @@ public class UserController {
 	public CollectionModel<EntityModel<UserResponseDTO>> getAllUsersResponse() {
 		List<UserResponseDTO> base = userservice.getAllUsersResponse();
 		List<EntityModel<UserResponseDTO>> users = base.stream()
-																		.map(assembler::toModel) 
+																		.map(responseAssembler::toModel) 
 																		.collect(Collectors.toList());
 
 		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
@@ -63,9 +68,9 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public EntityModel<User> getUser(@PathVariable UUID id) {
-		User user = userservice.getUser(id);
-		return assembler.toModel(user);
+	public EntityModel<UserDataDTO> getUser(@PathVariable UUID id) {
+		UserDataDTO user = userservice.getUser(id);
+		return dataAssembler.toModel(user);
 	}
 
 	@DeleteMapping("/{id}")
