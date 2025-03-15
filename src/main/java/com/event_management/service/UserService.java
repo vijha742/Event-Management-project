@@ -1,5 +1,6 @@
 package com.event_management.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,9 +8,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventRegistrationSummaryDTO;
 import com.event_management.dto.UserDataDTO;
 import com.event_management.dto.UserResponseDTO;
+import com.event_management.model.Event;
+import com.event_management.model.EventRegistration;
 import com.event_management.model.User;
 import com.event_management.repository.UserRepository;
 
@@ -22,20 +26,43 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 	private final UserRepository userRepository;
 	
-public User createUser(User user) {
+	public User createUser(User user) {
 		return userRepository.save(user);
 	}
 
 	@Transactional
 	public UserDataDTO getUser(UUID id) {
 		User user = userRepository.findById(id).orElse(null);
-    
 		UserDataDTO userData = new UserDataDTO(user);
-		userData.setEventRegistrations(
-			user.getEventRegistrations().stream()
-			.map(EventRegistrationSummaryDTO::new)
-			.collect(Collectors.toList())
-		);
+		List<EventRegistrationSummaryDTO> registrationsDTO = new ArrayList<>();
+		for (EventRegistration registration : user.getEventRegistrations()) {
+			EventRegistrationSummaryDTO regDTO = new EventRegistrationSummaryDTO();
+			regDTO.setId(registration.getId());
+			regDTO.setStatus(registration.getStatus());
+			regDTO.setRole(registration.getRole());
+			regDTO.setRegisteredAt(registration.getRegisteredAt());
+
+			Event event = registration.getEvent();
+			EventBaseDTO eventDTO = new EventBaseDTO(event);
+			eventDTO.setId(event.getId());
+      eventDTO.setName(event.getName());
+      eventDTO.setBadge(event.getBadge());
+			eventDTO.setDescription(event.getDescription());
+      eventDTO.setLocation(event.getLocation());
+      eventDTO.setDate(event.getDate());
+      eventDTO.setTime(event.getTime());
+      eventDTO.setBanner(event.getBanner());
+			User admin = event.getAdmin();
+        if (admin != null) {
+            eventDTO.setAdminName(admin.getName());
+            eventDTO.setAdminProfilePic(admin.getProfilePic());
+        }
+			regDTO.setEvent(eventDTO);
+        
+			registrationsDTO.add(regDTO);
+		}
+    
+		userData.setEventRegistrations(registrationsDTO);
 		return userData;
 	}
 
