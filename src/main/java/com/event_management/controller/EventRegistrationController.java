@@ -1,5 +1,7 @@
 package com.event_management.controller;
 
+import com.event_management.dto.EventRegistrationSummaryDTO;
+import java.util.stream.Collectors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +29,11 @@ public class EventRegistrationController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<EventRegistration> getUserEvents(@PathVariable UUID userId) {
-        return eventRegistrationService.getUserEvents(userId);
+    public List<EventRegistrationSummaryDTO> getUserEvents(@PathVariable UUID userId) {
+        List<EventRegistration> registrations = eventRegistrationService.getUserEvents(userId);
+        return registrations.stream()
+            .map(EventRegistrationSummaryDTO::new)
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/event/{eventId}")

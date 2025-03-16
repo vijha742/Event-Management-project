@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @AllArgsConstructor
 @Data
 @Entity
-@Builder
 @Table(name = "event_registrations")
 public class EventRegistration {
 

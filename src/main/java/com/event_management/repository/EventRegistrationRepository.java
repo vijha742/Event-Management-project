@@ -15,8 +15,11 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     List<EventRegistration> findByUserId(UUID userId);
     List<EventRegistration> findByEventId(UUID eventId);
 
-		@Modifying
+    @Modifying
     @Query("DELETE FROM EventRegistration er WHERE er.event = :event")
     void deleteEvent(@Param("event") Event event);
+
+    @Query("SELECT er FROM EventRegistration er JOIN FETCH er.event WHERE er.user.id = :userId")
+    List<EventRegistration> findByUserIdWithEvent(@Param("userId") UUID userId);
 }
 

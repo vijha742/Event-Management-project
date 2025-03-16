@@ -37,7 +37,6 @@ public class UserController {
 	private final UserService userservice;
 	private final UserModelAssembler assembler;		
 	private final UserResponseDTOModelAssembler responseAssembler;
-	private final UserDataDTOModelAssembler dataAssembler;
 	
 	@GetMapping
 	public CollectionModel<EntityModel<User>> getAllUsers() {
@@ -68,9 +67,9 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public EntityModel<UserDataDTO> getUser(@PathVariable UUID id) {
-		UserDataDTO user = userservice.getUser(id);
-		return dataAssembler.toModel(user);
+	public EntityModel<UserResponseDTO> getUser(@PathVariable UUID id) {
+		UserResponseDTO user = userservice.getUser(id);
+		return responseAssembler.toModel(user);
 	}
 
 	@DeleteMapping("/{id}")

@@ -37,7 +37,7 @@ public class EventRegistrationService {
     }
 
     public List<EventRegistration> getUserEvents(UUID userId) {
-        return eventRegistrationRepository.findByUserId(userId);
+        return eventRegistrationRepository.findByUserIdWithEvent(userId);
     }
 
     public List<EventRegistration> getEventParticipants(UUID eventId) {

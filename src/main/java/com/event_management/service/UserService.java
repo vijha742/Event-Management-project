@@ -31,38 +31,9 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDataDTO getUser(UUID id) {
+	public UserResponseDTO getUser(UUID id) {
 		User user = userRepository.findById(id).orElse(null);
-		UserDataDTO userData = new UserDataDTO(user);
-		List<EventRegistrationSummaryDTO> registrationsDTO = new ArrayList<>();
-		for (EventRegistration registration : user.getEventRegistrations()) {
-			EventRegistrationSummaryDTO regDTO = new EventRegistrationSummaryDTO();
-			regDTO.setId(registration.getId());
-			regDTO.setStatus(registration.getStatus());
-			regDTO.setRole(registration.getRole());
-			regDTO.setRegisteredAt(registration.getRegisteredAt());
-
-			Event event = registration.getEvent();
-			EventBaseDTO eventDTO = new EventBaseDTO(event);
-			eventDTO.setId(event.getId());
-      eventDTO.setName(event.getName());
-      eventDTO.setBadge(event.getBadge());
-			eventDTO.setDescription(event.getDescription());
-      eventDTO.setLocation(event.getLocation());
-      eventDTO.setDate(event.getDate());
-      eventDTO.setTime(event.getTime());
-      eventDTO.setBanner(event.getBanner());
-			User admin = event.getAdmin();
-        if (admin != null) {
-            eventDTO.setAdminName(admin.getName());
-            eventDTO.setAdminProfilePic(admin.getProfilePic());
-        }
-			regDTO.setEvent(eventDTO);
-        
-			registrationsDTO.add(regDTO);
-		}
-    
-		userData.setEventRegistrations(registrationsDTO);
+		UserResponseDTO userData = toUserReturnDTO(user);
 		return userData;
 	}
 
