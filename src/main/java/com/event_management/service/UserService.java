@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventRegistrationSummaryDTO;
-import com.event_management.dto.UserDataDTO;
 import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.Event;
 import com.event_management.model.EventRegistration;

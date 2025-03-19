@@ -1,17 +1,25 @@
 package com.event_management.controller;
 
-import com.event_management.dto.EventRegistrationSummaryDTO;
-import java.util.stream.Collectors;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import com.event_management.service.EventRegistrationService;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.event_management.dto.EventRegistrationSummaryDTO;
+import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.EventRegistration;
+import com.event_management.service.EventRegistrationService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -37,8 +45,12 @@ public class EventRegistrationController {
     }
 
     @GetMapping("/event/{eventId}")
-    public List<EventRegistration> getEventParticipants(@PathVariable UUID eventId) {
-        return eventRegistrationService.getEventParticipants(eventId);
+    public List<UserResponseDTO> getEventParticipants(@PathVariable UUID eventId) {
+        List<EventRegistration> registrations = eventRegistrationService.getEventParticipants(eventId);
+        return registrations.stream()
+            .map(registration -> registration.getUser())
+            .map(UserResponseDTO::new)
+            .collect(Collectors.toList());
     }
 
     @PutMapping("/mark-attended/{userId}/{eventId}")

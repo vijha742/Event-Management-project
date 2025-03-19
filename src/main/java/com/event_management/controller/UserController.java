@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import com.event_management.service.UserService;
-import com.event_management.assembler.UserDataDTOModelAssembler;
 import com.event_management.assembler.UserModelAssembler;
 import com.event_management.assembler.UserResponseDTOModelAssembler;
-import com.event_management.dto.UserDataDTO;
 import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.User;
 
