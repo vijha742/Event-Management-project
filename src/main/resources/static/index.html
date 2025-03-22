@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Event Manager</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		}
+
+		th,
+		td {
+			border: 1px solid black;
+			padding: 8px;
+			text-align: left;
+		}
+
+		th {
+			background-color: #f2f2f2;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: auto;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h2>Event Manager</h2>
+		<form id="eventForm">
+			<input type="hidden" id="eventId">
+			<label>Event Name:</label>
+			<input type="text" id="eventName" required>
+			<label>Date:</label>
+			<input type="date" id="eventDate" required>
+			<button type="button" onclick="saveEvent()">Save</button>
+		</form>
+		<h2>Create Event</h2>
+		<input type="text" placeholder="name" id="name">
+		<input type="text" placeholder="badge" id="badge">
+		<input type="text" placeholder="desc" id="desc">
+		<input type="text" placeholder="date" id="date">
+		<input type="text" placeholder="time" id="time">
+		<input type="text" placeholder="location" id="location">
+		<input type="text" placeholder="banner" id="banner">
+		<button onclick="saveEvent()">Save</button>
+		<h3>Events</h3>
+		<table id="eventTable">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Date</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+		<h3>Fetch JSON Data</h3>
+		<textarea id="jsonUrl" placeholder="Enter API URL" rows="2"></textarea>
+		<button onclick="fetchJsonData()">Fetch Data</button>
+		<table id="jsonTable"></table>
+	</div>
+	<script>
+		const apiUrl = '/api/events';
+		function fetchEvents() {
+			fetch(apiUrl).then(res => res.json()).then(data => {
+				const tbody = document.querySelector('#eventTable tbody');
+				tbody.innerHTML = '';
+				data.forEach(event => {
+					tbody.innerHTML += `<tr>
+                        <td>${event.id}</td>
+                        <td>${event.name}</td>
+                        <td>${event.date}</td>
+                        <td>
+                            <button onclick="editEvent(${event.id}, '${event.name}', '${event.date}')">Edit</button>
+                            <button onclick="deleteEvent(${event.id})">Delete</button>
+                        </td>
+                    </tr>`;
+				});
+			});
+		}
+		function saveEvent() {
+			const id = document.getElementById('eventId').value;
+			const name = document.getElementById('eventName').value;
+			const date = document.getElementById('eventDate').value;
+			const method = id ? 'PUT' : 'POST';
+			const url = id ? `${apiUrl}/${id}` : apiUrl;
+			fetch(url, {
+				method,
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({name, date})
+			}).then(() => {
+				document.getElementById('eventForm').reset();
+				fetchEvents();
+			});
+		}
+		function editEvent(id, name, date) {
+			document.getElementById('eventId').value = id;
+			document.getElementById('eventName').value = name;
+			document.getElementById('eventDate').value = date;
+		}
+		function deleteEvent(id) {
+			fetch(`${apiUrl}/${id}`, {method: 'DELETE'}).then(fetchEvents);
+		}
+		function fetchJsonData() {
+			const url = document.getElementById('jsonUrl').value;
+			fetch(url).then(res => res.json()).then(data => {
+				const table = document.getElementById('jsonTable');
+				table.innerHTML = '';
+				if (Array.isArray(data)) {
+					const headers = Object.keys(data[0] || {});
+					table.innerHTML += `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+					data.forEach(row => {
+						table.innerHTML += `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`;
+					});
+				}
+			});
+		}
+		fetchEvents();
+	</script>
+</body>
+
+</html>

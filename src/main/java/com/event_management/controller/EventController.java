@@ -32,6 +32,7 @@ import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventDTO;
 import com.event_management.dto.EventResponseDTO;
 import com.event_management.model.Event;
+import com.event_management.model.Role;
 import com.event_management.repository.UserRepository;
 import com.event_management.service.EventService;
 
@@ -84,8 +85,8 @@ public class EventController {
     ResponseEntity<?> newEvent(@RequestBody EventDTO newEvent) {
         Optional<User> adminUser = userRepository.findById(newEvent.getAdmin());
 
-        if (adminUser.isEmpty()) {
-            return ResponseEntity.badRequest().body("Admin user not found");
+        if (adminUser.isEmpty() || adminUser.get().getRole() == Role.USER) {
+            return ResponseEntity.badRequest().body("No user found with this rights...");
         }
 
         Event createdEvent = eventService.createEvent(newEvent, adminUser.get());
@@ -103,11 +104,9 @@ public class EventController {
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
             
             eventService.deleteEvent(event);
-            log.info("Successfully deleted event with ID: {}", eventId);            
             return ResponseEntity.ok().body("Deleted event successfully.");
                 
         } catch (RuntimeException e) {
-            log.error("Error deleting event with ID: {}", eventId, e);
             return ResponseEntity.notFound().build();
             
         } catch (Exception e) {
