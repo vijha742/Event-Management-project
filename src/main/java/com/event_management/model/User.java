@@ -34,6 +34,7 @@ public class User {
 	private String name;
 	@Column(nullable = false, unique = true)
 	private String email;
+	@Column(nullable = false)
 	private String password;
 	@Column(nullable = false)
 	private String profilePic;
@@ -45,7 +46,7 @@ public class User {
 	private Role role;
 
 	@OneToMany(mappedBy = "user", fetch=FetchType.LAZY)
-	@JsonManagedReference
+	@JsonManagedReference(value = "user-registration")
 	private Set<EventRegistration> eventRegistrations;
 
  @Override

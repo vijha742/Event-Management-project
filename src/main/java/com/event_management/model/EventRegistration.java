@@ -24,12 +24,12 @@ public class EventRegistration {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "user-registration")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "event-registration")
     private Event event;
 
     @Column(name = "registered_at", nullable = false)
