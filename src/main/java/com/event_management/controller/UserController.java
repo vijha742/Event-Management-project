@@ -39,12 +39,10 @@ public class UserController {
 	@GetMapping
 	public CollectionModel<EntityModel<User>> getAllUsers() {
 		List<User> base = userservice.getAllUsers();
-		System.out.println("Passed lvl 1");
 		List<EntityModel<User>> users = base.stream()
 																		.map(assembler::toModel) 
 																		.collect(Collectors.toList());
 
-		System.out.println("Passed lvl 2");
 		return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
 	}
 
@@ -70,6 +68,7 @@ public class UserController {
 		return responseAssembler.toModel(user);
 	}
 
+	//TODO: Learn how to map users against Ids provided by OAuth and inplement the function to delete the user data only if the request is sent by the user... 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
 		userservice.deleteUser(id);

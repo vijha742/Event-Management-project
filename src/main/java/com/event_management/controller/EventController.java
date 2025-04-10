@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -96,6 +95,7 @@ public class EventController {
     }
 
 
+    //TODO:Correct the delete mapping logic to let only the User who created the event and the Admins be able to delete the event...
     @DeleteMapping("/{eventId}")
     @Transactional
     public ResponseEntity<?> deleteEvent(@PathVariable UUID eventId) {

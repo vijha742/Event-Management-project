@@ -30,8 +30,8 @@ public class EventRegistrationController {
 
     private final EventRegistrationService eventRegistrationService;
 
-    @PostMapping("/register")
-    public String registerUser(@RequestBody UUID userId, @RequestBody UUID eventId) {
+    @PostMapping("/register/{userId}")
+    public String registerUser(@PathVariable UUID userId, @RequestBody UUID eventId) {
         eventRegistrationService.registerUserForEvent(userId, eventId);
         return "User registered successfully!";
     }
@@ -53,6 +53,7 @@ public class EventRegistrationController {
             .collect(Collectors.toList());
     }
 
+    //TODO:Add to Enum Missed also so, if the user's status isn't filled till the completio of the event, he/she is marked as absent...
     @PutMapping("/mark-attended/{userId}/{eventId}")
     public String markAsAttended(@PathVariable UUID userId, @PathVariable UUID eventId) {
         eventRegistrationService.markEventAsAttended(userId, eventId);

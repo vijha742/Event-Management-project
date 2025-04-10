@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component;
 import com.event_management.controller.EventController;
 import com.event_management.dto.EventBaseDTO;
 import com.event_management.model.Event;
-
-import lombok.AllArgsConstructor;
+import com.event_management.model.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

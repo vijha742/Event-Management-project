@@ -1,21 +1,13 @@
 package com.event_management.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.event_management.dto.EventBaseDTO;
-import com.event_management.dto.EventRegistrationSummaryDTO;
 import com.event_management.dto.UserResponseDTO;
-import com.event_management.model.Event;
-import com.event_management.model.EventRegistration;
 import com.event_management.model.User;
 import com.event_management.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +35,9 @@ public class UserService {
 		existingUser.setEmail(user.getEmail());
 		existingUser.setPassword(user.getPassword());
 		existingUser.setRole(user.getRole());
+		existingUser.setProfilePic(user.getProfilePic());
+		existingUser.setPhoneNo(user.getPhoneNo());
+		existingUser.setStudyYear(user.getStudyYear());
 		return userRepository.save(existingUser);
 	}
 

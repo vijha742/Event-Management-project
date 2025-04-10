@@ -4,15 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.event_management.assembler.EventModelAssembler;
 import com.event_management.dto.EventBaseDTO;
 import com.event_management.dto.EventDTO;
-import com.event_management.exception.EventNotFoundException;
 import com.event_management.model.Event;
 import com.event_management.model.User;
 import com.event_management.repository.EventRegistrationRepository;
@@ -29,8 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EventService {
 
 	private final EventRepository eventRepo;
-	private final UserRepository userRepo;
-        private final EventModelAssembler eventAssembler;
+	private final EventModelAssembler eventAssembler;
 	private final EventRegistrationRepository eventRegistrationRepo;
 
         @Transactional(readOnly = true)
@@ -70,6 +66,7 @@ public class EventService {
 		return eventRepo.save(event);
 	}
 
+	//TODO:Edit the updateEvent logic to not take the value from null field sent by user and add the logic for json data that needs to be included...
 	public Event updateEvent(UUID Id, Event event) {
 		Event existingEvent = eventRepo.findById(Id)
 			.orElseGet(() -> eventRepo.save(event));
