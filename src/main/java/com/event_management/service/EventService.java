@@ -1,5 +1,4 @@
 package com.event_management.service;
-//HACK: Work on this... 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

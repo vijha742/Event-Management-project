@@ -3,6 +3,7 @@ package com.event_management.controller;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -10,6 +11,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +39,13 @@ public class UserController {
 	private final UserModelAssembler assembler;		
 	private final UserResponseDTOModelAssembler responseAssembler;
 	
+
+	@GetMapping("/find-user")
+	public String getUserName(@AuthenticationPrincipal OAuth2User principal) {
+		String email = principal.getAttribute("email");
+		return email;
+	}
+
 	@GetMapping
 	public CollectionModel<EntityModel<User>> getAllUsers() {
 		List<User> base = userservice.getAllUsers();

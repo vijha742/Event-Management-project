@@ -1,5 +1,4 @@
 package com.event_management.assembler;
-// HACK: To work on this...
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

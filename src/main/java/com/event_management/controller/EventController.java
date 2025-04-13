@@ -1,6 +1,5 @@
 package com.event_management.controller;
 
-// HACK: To work on this...
 import com.event_management.model.User;
 import java.util.Optional;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
