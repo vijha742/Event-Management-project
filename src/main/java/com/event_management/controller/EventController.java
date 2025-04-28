@@ -1,18 +1,27 @@
 package com.event_management.controller;
 
-import com.event_management.model.User;
-import java.util.Optional;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.event_management.assembler.EventModelAssembler;
+import com.event_management.dto.EventBaseDTO;
+import com.event_management.dto.EventDTO;
+import com.event_management.dto.EventResponseDTO;
+import com.event_management.model.Event;
+import com.event_management.model.Role;
+import com.event_management.model.User;
+import com.event_management.repository.UserRepository;
+import com.event_management.service.EventService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,17 +34,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.event_management.assembler.EventModelAssembler;
-import com.event_management.dto.EventBaseDTO;
-import com.event_management.dto.EventDTO;
-import com.event_management.dto.EventResponseDTO;
-import com.event_management.model.Event;
-import com.event_management.model.Role;
-import com.event_management.repository.UserRepository;
-import com.event_management.service.EventService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -50,10 +52,9 @@ public class EventController {
 
     @GetMapping
     public CollectionModel<EntityModel<Event>> getAllEvents() {
-        List<Event> base =  eventService.getAllEvents();
-        List<EntityModel<Event>> events = base.stream()
-                        .map(assembler::toModel)
-                        .collect(Collectors.toList());
+        List<Event> base = eventService.getAllEvents();
+        List<EntityModel<Event>> events =
+                base.stream().map(assembler::toModel).collect(Collectors.toList());
         return CollectionModel.of(
                 events, linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel());
     }
@@ -61,9 +62,8 @@ public class EventController {
     @GetMapping("/event-list")
     public CollectionModel<EntityModel<EventBaseDTO>> getAllBaseEvents() {
         List<EventBaseDTO> base = eventService.getAllEventsBaseDTOs();
-        List<EntityModel<EventBaseDTO>> eventDTOs = base.stream()
-                        .map(assembler::toModel)
-                        .collect(Collectors.toList());
+        List<EntityModel<EventBaseDTO>> eventDTOs =
+                base.stream().map(assembler::toModel).collect(Collectors.toList());
 
         return CollectionModel.of(
                 eventDTOs, linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel());
@@ -76,7 +76,7 @@ public class EventController {
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok( new EventResponseDTO(event));
+        return ResponseEntity.ok(new EventResponseDTO(event));
     }
 
     @PostMapping
@@ -88,26 +88,34 @@ public class EventController {
         }
 
         Event createdEvent = eventService.createEvent(newEvent, adminUser.get());
-        EntityModel<Event> entityModel = assembler.toModel(createdEvent);
+        EventResponseDTO eventResponseDTO = new EventResponseDTO(createdEvent);
+        EntityModel<EventResponseDTO> entityModel = assembler.toModel(eventResponseDTO);
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
 
-
-    //TODO:Correct the delete mapping logic to let only the User who created the event and the Admins be able to delete the event...
     @DeleteMapping("/{eventId}")
     @Transactional
-    public ResponseEntity<?> deleteEvent(@PathVariable UUID eventId) {
+    public ResponseEntity<?> deleteEvent(
+            @AuthenticationPrincipal OAuth2User principal, @PathVariable UUID eventId) {
         try {
-            Event event = eventService.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
-            
+            Event event = eventService.findById(eventId);
+            if (event == null) {
+                return ResponseEntity.internalServerError()
+                        .body("Event not found with id: " + eventId);
+            }
+            String userEmail = userRepository.findById(event.getAdmin().getId()).get().getEmail();
+            String email = principal.getAttribute("email");
+            if (!userEmail.equals(email)) {
+                return ResponseEntity.status(403)
+                        .body("You are not authorized to delete this event.");
+            }
             eventService.deleteEvent(event);
             return ResponseEntity.ok().body("Deleted event successfully.");
-                
+
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-            
+
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -120,5 +128,4 @@ public class EventController {
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
-
 }

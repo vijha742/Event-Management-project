@@ -1,14 +1,14 @@
 package com.event_management.dto;
 
 import com.event_management.model.EventRegistration;
-import java.util.UUID;
-
-import java.time.LocalDateTime;
 import com.event_management.model.RegistrationStatus;
-import com.event_management.model.User;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor

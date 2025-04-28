@@ -1,14 +1,5 @@
 package com.event_management.model;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -20,9 +11,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,66 +32,62 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "events")
 public class Event {
-	@Column(nullable = false)
-	private String name;
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	private UUID id;
+    @Column(nullable = false)
+    private String name;
 
-	private String badge;
-	private String description;
-	private String location;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private UUID id;
 
-	@Column(nullable = false)
-	private LocalDate date;
-	
-	@Column(nullable = false)
-	private LocalTime time;
-	
-	private String banner;
-	private String logo;
-	private Set<String> socialLinks;
+    private String badge;
+    private String description;
+    private String location;
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "authorized_users", columnDefinition = "jsonb")
-	private List<Coordinators> authorized_users = new ArrayList<>();
+    @Column(nullable = false)
+    private LocalDate date;
 
-	@ManyToOne
-	@JoinColumn(name = "admin_id", nullable = false)
-	private User admin;
+    @Column(nullable = false)
+    private LocalTime time;
 
-	private int participants;
+    @Column(columnDefinition = "text")
+    private String banner;
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "about_data", columnDefinition = "jsonb")
-	private AboutData aboutData;
-    
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "announcements", columnDefinition = "jsonb")
-	private List<Announcement> announcement;
+    @Column(columnDefinition = "text")
+    private String logo;
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "guidelines_data", columnDefinition = "jsonb")
-	private GuidelinesData guidelinesData;
+    private Set<String> socialLinks;
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "faq_data", columnDefinition = "jsonb")
-	private List<FaqItem> faqData;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "authorized_users", columnDefinition = "jsonb")
+    private List<Coordinators> authorized_users = new ArrayList<>();
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "timeline_data", columnDefinition = "jsonb")
-	private List<TimelineItem> timeline;
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private User admin;
 
-	@OneToMany(mappedBy = "event")
-	@JsonManagedReference(value = "event-registration")
-	private Set<EventRegistration> eventRegistrations;
+    private int participants;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "about_data", columnDefinition = "jsonb")
+    private AboutData aboutData;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "announcements", columnDefinition = "jsonb")
+    private List<Announcement> announcement;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "guidelines_data", columnDefinition = "jsonb")
+    private GuidelinesData guidelinesData;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "faq_data", columnDefinition = "jsonb")
+    private List<FaqItem> faqData;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "timeline_data", columnDefinition = "jsonb")
+    private List<TimelineItem> timeline;
+
+    @OneToMany(mappedBy = "event")
+    @JsonManagedReference(value = "event-registration")
+    private Set<EventRegistration> eventRegistrations;
 }
-
-
-
-
-
-
-
-
-

@@ -54,6 +54,7 @@ public class EventRegistrationController {
     }
 
     //TODO:Add to Enum Missed also so, if the user's status isn't filled till the completio of the event, he/she is marked as absent...
+    //NOTE: Can be done via scheduled background jobs or crons in Postgres... 
     @PutMapping("/mark-attended/{userId}/{eventId}")
     public String markAsAttended(@PathVariable UUID userId, @PathVariable UUID eventId) {
         eventRegistrationService.markEventAsAttended(userId, eventId);

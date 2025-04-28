@@ -1,13 +1,14 @@
 package com.event_management.dto;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.UUID;
+import com.event_management.model.Event;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import  com.event_management.model.Event;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,13 +29,13 @@ public class EventBaseDTO {
     public EventBaseDTO(Event event) {
         this.setId(event.getId());
         this.setName(event.getName());
-	this.setBadge(event.getBadge());
+        this.setBadge(event.getBadge());
         this.setDescription(event.getDescription());
         this.setLocation(event.getLocation());
         this.setDate(event.getDate());
         this.setTime(event.getTime());
         this.setBanner(event.getBanner());
         this.setAdminName(event.getAdmin().getName());
-	this.setAdminProfilePic(event.getAdmin().getProfilePic());
+        this.setAdminProfilePic(event.getAdmin().getProfilePic());
     }
 }
