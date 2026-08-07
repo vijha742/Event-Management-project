@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/event")
 @RequiredArgsConstructor
 @Validated

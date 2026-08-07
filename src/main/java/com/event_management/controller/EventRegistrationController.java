@@ -22,7 +22,6 @@ import com.event_management.service.EventRegistrationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/registrations")
 @RequiredArgsConstructor
 @Validated

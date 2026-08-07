@@ -46,7 +46,6 @@ public class SessionController {
             return ResponseEntity.ok(new SessionStatus(false));
         */ }
 
-    /** Simple DTO for session status */
     public static class SessionStatus {
         private final boolean valid;
 
