@@ -32,62 +32,62 @@ import java.util.UUID;
 @Entity
 @Table(name = "events")
 public class Event {
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 
-    private String badge;
-    private String description;
-    private String location;
+	private String badge;
+	private String description;
+	private String location;
 
-    @Column(nullable = false)
-    private LocalDate date;
+	@Column(nullable = false)
+	private LocalDate date;
 
-    @Column(nullable = false)
-    private LocalTime time;
+	@Column(nullable = false)
+	private LocalTime time;
 
-    @Column(columnDefinition = "text")
-    private String banner;
+	@Column(columnDefinition = "text")
+	private String banner;
 
-    @Column(columnDefinition = "text")
-    private String logo;
+	@Column(columnDefinition = "text")
+	private String logo;
 
-    private Set<String> socialLinks;
+	private Set<String> socialLinks;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "authorized_users", columnDefinition = "jsonb")
-    private List<Coordinators> authorized_users = new ArrayList<>();
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "authorized_users", columnDefinition = "jsonb")
+	private List<Coordinators> authorized_users = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false)
-    private User admin;
+	@ManyToOne
+	@JoinColumn(name = "admin_id", nullable = false)
+	private User admin;
 
-    private int participants;
+	private int participants;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "about_data", columnDefinition = "jsonb")
-    private AboutData aboutData;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "about_data", columnDefinition = "jsonb")
+	private AboutData aboutData;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "announcements", columnDefinition = "jsonb")
-    private List<Announcement> announcement;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "announcements", columnDefinition = "jsonb")
+	private List<Announcement> announcement;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "guidelines_data", columnDefinition = "jsonb")
-    private GuidelinesData guidelinesData;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "guidelines_data", columnDefinition = "jsonb")
+	private GuidelinesData guidelinesData;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "faq_data", columnDefinition = "jsonb")
-    private List<FaqItem> faqData;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "faq_data", columnDefinition = "jsonb")
+	private List<FaqItem> faqData;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "timeline_data", columnDefinition = "jsonb")
-    private List<TimelineItem> timeline;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "timeline_data", columnDefinition = "jsonb")
+	private List<TimelineItem> timeline;
 
-    @OneToMany(mappedBy = "event")
-    @JsonManagedReference(value = "event-registration")
-    private Set<EventRegistration> eventRegistrations;
+	@OneToMany(mappedBy = "event")
+	@JsonManagedReference(value = "event-registration")
+	private Set<EventRegistration> eventRegistrations;
 }
