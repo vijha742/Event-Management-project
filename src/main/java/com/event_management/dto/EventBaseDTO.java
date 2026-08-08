@@ -22,6 +22,7 @@ public class EventBaseDTO {
     private LocalDate date;
     private LocalTime time;
     private String location;
+    private UUID adminId;
     private String adminProfilePic;
     private String adminName;
     private String banner;
@@ -35,6 +36,7 @@ public class EventBaseDTO {
         this.setDate(event.getDate());
         this.setTime(event.getTime());
         this.setBanner(event.getBanner());
+        this.setAdminId(event.getAdmin().getId());
         this.setAdminName(event.getAdmin().getName());
         this.setAdminProfilePic(event.getAdmin().getProfilePic());
     }

@@ -17,7 +17,7 @@ public class EventDTO {
     private LocalDate date;
     private LocalTime time;
     private String banner;
-    private UUID admin; // ✅ Only UUID instead of full User object
+    private UUID admin;
     private int participants;
     private String badge;
 }
