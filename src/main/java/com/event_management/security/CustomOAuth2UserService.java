@@ -26,7 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User user = super.loadUser(userRequest);
 
         // Get access token to call /user/emails endpoint
-        String accessToken = userRequest.getAccessToken().getTokenValue();
+        // String accessToken = userRequest.getAccessToken().getTokenValue();
         String Authprovider = userRequest.getClientRegistration().getRegistrationId();
         String email = null;
 
@@ -36,13 +36,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             email = user.getAttribute("email");
         }
 
+        OAuth2User newUser = createOAuth2User(userRequest, user, email);
         // Check if the user already exists in the database
         if (userService.isUserExists(email)) {
         } else {
-            userService.createUserwithOAuth(user);
+            userService.createUserwithOAuth(newUser);
         }
 
-        return createOAuth2User(userRequest, user, email);
+        return newUser;
     }
 
     // Merge the email into attributes
@@ -51,12 +52,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = new HashMap<>(user.getAttributes());
         attributes.put("email", email);
 
-        String userNameAttributeName =
-                userRequest
-                        .getClientRegistration()
-                        .getProviderDetails()
-                        .getUserInfoEndpoint()
-                        .getUserNameAttributeName();
+        String userNameAttributeName = userRequest
+                .getClientRegistration()
+                .getProviderDetails()
+                .getUserInfoEndpoint()
+                .getUserNameAttributeName();
 
         return new DefaultOAuth2User(user.getAuthorities(), attributes, userNameAttributeName);
     }
@@ -67,14 +67,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         headers.add("Authorization", "token " + accessToken);
         headers.add("Accept", "application/vnd.github.v3+json");
         HttpEntity<String> entity = new HttpEntity<>("", headers);
-        // Call the GitHub API to get the user's email only when the user is actually trying to log
+        // Call the GitHub API to get the user's email only when the user is actually
+        // trying to log
         // in via Giyhub bcz google gives the gmail
-        ResponseEntity<List<Map<String, Object>>> response =
-                restTemplate.exchange(
-                        "https://api.github.com/user/emails",
-                        HttpMethod.GET,
-                        entity,
-                        new ParameterizedTypeReference<>() {});
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                "https://api.github.com/user/emails",
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {
+                });
 
         String email = null;
         for (Map<String, Object> emailEntry : response.getBody()) {

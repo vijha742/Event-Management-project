@@ -28,7 +28,7 @@ public class UserService {
 
     public User createUserwithOAuth(OAuth2User user) {
         String email = user.getAttribute("email");
-        User preUser = userRepository.findByEmail("email").orElse(null);
+        User preUser = userRepository.findByEmail(email).orElse(null);
 
         if (preUser == null) {
             preUser = new User();
