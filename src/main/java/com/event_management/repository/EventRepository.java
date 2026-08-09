@@ -1,8 +1,6 @@
 package com.event_management.repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.event_management.model.Event;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,19 +9,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.event_management.model.Event;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
-		@Query("SELECT e FROM Event e LEFT JOIN FETCH e.admin LEFT JOIN FETCH e.eventRegistrations er LEFT JOIN FETCH er.user")
-		List<Event> findAllWithAdminAndRegistrations();
+	@Query("SELECT e FROM Event e LEFT JOIN FETCH e.admin LEFT JOIN FETCH e.eventRegistrations er"
+			+ " LEFT JOIN FETCH er.user")
+	List<Event> findAllWithAdminAndRegistrations();
 
-		@Modifying
-		@Transactional
-		@Query("DELETE FROM Event e WHERE e= :event")
-		void delete(@Param("event") Event event);
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM Event e WHERE e= :event")
+	void delete(@Param("event") Event event);
 
-		@Query("SELECT e FROM Event e LEFT JOIN FETCH e.eventRegistrations WHERE e.id = :id")
-    Optional<Event> findByIdWithRegistrations(@Param("id") UUID id);
-
+	@Query("SELECT e FROM Event e LEFT JOIN FETCH e.eventRegistrations WHERE e.id = :id")
+	Optional<Event> findByIdWithRegistrations(@Param("id") UUID id);
 }
