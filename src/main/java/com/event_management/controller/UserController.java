@@ -9,13 +9,8 @@ import com.event_management.dto.UserResponseDTO;
 import com.event_management.model.User;
 import com.event_management.service.UserService;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-
 import lombok.RequiredArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -47,7 +42,6 @@ public class UserController {
     private final UserService userservice;
     private final UserModelAssembler assembler;
     private final UserResponseDTOModelAssembler responseAssembler;
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/find-user")
     public String getUserName(@AuthenticationPrincipal OAuth2User principal) {
@@ -126,67 +120,19 @@ public class UserController {
         }
     }
 
-    /*    @PutMapping("/{id}")
-        public ResponseEntity<?> replaceUser(
-                @RequestBody UserResponseDTO newUser, @PathVariable UUID id) {
-            if (getCurrentUserData().getRole().equals("ADMIN")
-                    || getCurrentUserData().getId().equals(id)) {
-                User updatedUser = userservice.updateUser(newUser, id);
-                EntityModel<User> entityModel = assembler.toModel(updatedUser);
-                return ResponseEntity.created(
-                                entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                        .body(entityModel);
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("You don't have permission to update this user account");
-            }
-        }
-    */
     @PutMapping("/{id}")
     public ResponseEntity<?> replaceUser(
             @RequestBody UserResponseDTO newUser,
-            @PathVariable UUID id,
-            HttpServletRequest request) {
-        // Debug request information
-        // Debug authentication information
-        logger.debug("Request to update user with ID: {}", id);
-        logger.debug(
-                "Current authentication principal: {}",
-                SecurityContextHolder.getContext().getAuthentication());
-
-        logger.debug(
-                "Current authentication principal: {}",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-
-        // Debug cookies
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                logger.debug("Cookie: {} = {}", cookie.getName(), "present");
-            }
-        } else {
-            logger.debug("No cookies found in request");
-        }
-
-        // Debug headers
-        logger.debug("XSRF Token header: {}", request.getHeader("X-XSRF-TOKEN"));
-
-        // Debug authorization check
+            @PathVariable UUID id) {
         UserResponseDTO currentUser = getCurrentUserData();
-        logger.debug("Current user role: {}", currentUser.getRole());
-        logger.debug("Current user ID: {}", currentUser.getId());
-        logger.debug("Is user admin? {}", currentUser.getRole().equals("ADMIN"));
-        logger.debug("Is user the same? {}", currentUser.getId().equals(id));
 
         if (currentUser.getRole().equals("ADMIN") || currentUser.getId().equals(id)) {
-            logger.debug("Authorization passed - processing update");
             User updatedUser = userservice.updateUser(newUser, id);
             EntityModel<User> entityModel = assembler.toModel(updatedUser);
             return ResponseEntity.created(
                             entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                     .body(entityModel);
         } else {
-            logger.debug("Authorization failed - returning 403");
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You don't have permission to update this user account");
         }
