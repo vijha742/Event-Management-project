@@ -1,0 +1,95 @@
+@startuml Database_ER_Diagram
+!theme plain
+
+title Event Management System - Database/ER Diagram
+
+entity "users" as users {
+  *id : BIGINT [PK]
+  --
+  email : VARCHAR(255) [UNIQUE, NOT NULL]
+  name : VARCHAR(255) [NOT NULL]
+  oauth_provider : VARCHAR(100)
+  profile_picture : TEXT
+  role : VARCHAR(50) [DEFAULT: 'USER']
+  created_at : TIMESTAMP [DEFAULT: CURRENT_TIMESTAMP]
+  updated_at : TIMESTAMP [DEFAULT: CURRENT_TIMESTAMP]
+}
+
+entity "events" as events {
+  *id : BIGINT [PK]
+  --
+  name : VARCHAR(500) [NOT NULL]
+  description : TEXT
+  date : TIMESTAMP [NOT NULL]
+  time : TIME
+  location : VARCHAR(500)
+  capacity : INTEGER
+  banner : TEXT
+  logo : TEXT
+  badge : TEXT
+  status : VARCHAR(50) [DEFAULT: 'UPCOMING']
+  additional_fields : JSONB [Flexible Schema]
+  created_by : BIGINT [FK -> users.id]
+  created_at : TIMESTAMP [DEFAULT: CURRENT_TIMESTAMP]
+  updated_at : TIMESTAMP [DEFAULT: CURRENT_TIMESTAMP]
+}
+
+entity "event_registrations" as event_registrations {
+  *id : BIGINT [PK]
+  --
+  event_id : BIGINT [FK -> events.id, NOT NULL]
+  user_id : BIGINT [FK -> users.id, NOT NULL]
+  status : VARCHAR(50) [DEFAULT: 'REGISTERED']
+  role : VARCHAR(100)
+  registered_at : TIMESTAMP [DEFAULT: CURRENT_TIMESTAMP]
+  cancelled_at : TIMESTAMP [NULLABLE]
+}
+
+' Relationships
+users ||--o{ events : "creates"
+users ||--o{ event_registrations : "participates_in"
+events ||--o{ event_registrations : "has"
+
+note right of users
+  Stores user information with OAuth2 support.
+  
+  Indexes:
+  - email (UNIQUE)
+  - oauth_provider
+  - role
+  
+  Roles: ADMIN, USER, ORGANIZER
+end note
+
+note right of events
+  Stores event details with flexible schema.
+  JSONB column for additional fields:
+  - social_links, announcements
+  - about_data, guidelines_data
+  - custom metadata
+  
+  Status: UPCOMING, ONGOING, COMPLETED, CANCELLED
+  
+  Indexes:
+  - created_by (FK)
+  - status
+  - date
+  - (created_by, status)
+end note
+
+note right of event_registrations
+  Junction table for M:N relationship
+  between users and events.
+  
+  Status: REGISTERED, WAITING_LIST,
+  CANCELLED, APPROVED
+  
+  Unique Constraint: (event_id, user_id)
+  
+  Indexes:
+  - event_id
+  - user_id
+  - (event_id, status)
+end note
+
+@enduml

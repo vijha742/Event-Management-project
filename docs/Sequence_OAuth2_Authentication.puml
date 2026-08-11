@@ -1,0 +1,43 @@
+@startuml OAuth2_Authentication_Sequence
+title OAuth2 Authentication Flow - Sequence Diagram
+
+actor User
+participant Browser
+participant EventManagementApp
+participant SecurityConfig
+participant CustomOAuth2UserService
+participant GoogleOAuth as "Google OAuth2"
+participant JwtTokenProvider
+participant UserRepository
+database PostgreSQL
+
+User -> Browser: Click "Login with Google"
+Browser -> EventManagementApp: Redirect to /oauth2/authorization/google
+EventManagementApp -> SecurityConfig: Check OAuth2 Config
+SecurityConfig -> GoogleOAuth: Request Authorization Code
+GoogleOAuth -> User: Show Google Login Page
+User -> GoogleOAuth: Enter Credentials
+GoogleOAuth -> Browser: Return Authorization Code
+Browser -> EventManagementApp: /login/oauth2/code/google?code=...
+EventManagementApp -> SecurityConfig: Exchange Code for Token
+SecurityConfig -> GoogleOAuth: Request Access Token with Code
+GoogleOAuth -> SecurityConfig: Return Access Token + User Info
+SecurityConfig -> CustomOAuth2UserService: Load User from OAuth2
+CustomOAuth2UserService -> GoogleOAuth: Fetch User Details
+GoogleOAuth -> CustomOAuth2UserService: User ID, Email, Name, Picture
+CustomOAuth2UserService -> UserRepository: Check if User Exists
+UserRepository -> PostgreSQL: Query User by Email
+PostgreSQL -> UserRepository: User Found/Not Found
+alt User Not Found
+  CustomOAuth2UserService -> PostgreSQL: Insert New User
+  PostgreSQL -> CustomOAuth2UserService: User Created
+else User Exists
+  CustomOAuth2UserService -> PostgreSQL: Update Last Login
+  PostgreSQL -> CustomOAuth2UserService: User Updated
+end
+CustomOAuth2UserService -> JwtTokenProvider: Generate JWT Token
+JwtTokenProvider -> CustomOAuth2UserService: Return JWT Token
+EventManagementApp -> Browser: Redirect to Dashboard with Token
+Browser -> User: Display Dashboard
+
+@enduml

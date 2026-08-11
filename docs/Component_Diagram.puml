@@ -1,0 +1,163 @@
+@startuml Component_Diagram
+!theme plain
+
+title Event Management System - Component Diagram
+
+package "Presentation Layer" {
+  component [Web Client] as WebClient
+  component [Mobile Client] as MobileClient
+  component [Admin Portal] as AdminPortal
+}
+
+package "API & Gateway Layer" {
+  component [REST API] as RestAPI
+  component [API Gateway] as APIGateway
+  component [CORS Handler] as CORSHandler
+}
+
+package "Security Layer" {
+  component [OAuth2 Handler] as OAuth2Handler
+  component [JWT Provider] as JWTProvider
+  component [Security Filter Chain] as SecurityChain
+  component [Custom OAuth2 Service] as CustomOAuth2
+}
+
+package "Controller Layer" {
+  component [Event Controller] as EventController
+  component [User Controller] as UserController
+  component [Registration Controller] as RegistrationController
+  component [Session Controller] as SessionController
+}
+
+package "Service Layer" {
+  component [Event Service] as EventService
+  component [User Service] as UserService
+  component [Registration Service] as RegistrationService
+  component [Session Validation Service] as SessionService
+}
+
+package "Data Access Layer" {
+  component [Event Repository] as EventRepository
+  component [User Repository] as UserRepository
+  component [Registration Repository] as RegistrationRepository
+  component [JPA Base Repository] as JPABase
+}
+
+package "Caching Layer" {
+  component [Cache Manager] as CacheManager
+  component [Redis Client] as RedisClient
+}
+
+package "External Services" {
+  component [Google OAuth2] as GoogleOAuth
+  component [Email Service] as EmailService
+  component [File Storage Service] as FileStorage
+}
+
+package "Data Persistence" {
+  database "PostgreSQL" as PostgreSQL {
+    component [Event Table] as EventTable
+    component [User Table] as UserTable
+    component [Registration Table] as RegTable
+  }
+}
+
+package "Configuration" {
+  component [Jackson Config] as JacksonConfig
+  component [Security Config] as SecurityConfig
+  component [Environment Config] as EnvConfig
+}
+
+package "Exception Handling" {
+  component [Exception Advice] as ExceptionAdvice
+  component [Exception Handler] as ExceptionHandler
+}
+
+package "Utilities" {
+  component [Logger] as Logger
+  component [Validator] as Validator
+  component [DTO Mapper] as DTOMapper
+}
+
+' Connections - External to Internal
+WebClient -.-> RestAPI
+MobileClient -.-> RestAPI
+AdminPortal -.-> RestAPI
+
+RestAPI --> APIGateway
+APIGateway --> CORSHandler
+APIGateway --> SecurityChain
+
+SecurityChain --> OAuth2Handler
+OAuth2Handler --> JWTProvider
+OAuth2Handler --> CustomOAuth2
+CustomOAuth2 --> GoogleOAuth
+
+SecurityChain --> EventController
+SecurityChain --> UserController
+SecurityChain --> RegistrationController
+SecurityChain --> SessionController
+
+' Controller to Service
+EventController --> EventService
+UserController --> UserService
+RegistrationController --> RegistrationService
+SessionController --> SessionService
+
+EventController --> JacksonConfig
+UserController --> JacksonConfig
+RegistrationController --> JacksonConfig
+
+' Service to Repository
+EventService --> EventRepository
+UserService --> UserRepository
+RegistrationService --> RegistrationRepository
+SessionService --> UserRepository
+
+' Repository to JPA
+EventRepository --> JPABase
+UserRepository --> JPABase
+RegistrationRepository --> JPABase
+
+' Service to Cache
+EventService --> CacheManager
+CacheManager --> RedisClient
+
+' Service to External
+RegistrationService --> EmailService
+EventService --> FileStorage
+
+' Repository to Database
+EventRepository --> EventTable
+UserRepository --> UserTable
+RegistrationRepository --> RegTable
+
+' Exception Handling
+EventController -.-> ExceptionAdvice
+UserController -.-> ExceptionAdvice
+RegistrationController -.-> ExceptionAdvice
+SessionController -.-> ExceptionAdvice
+
+EventService -.-> ExceptionHandler
+UserService -.-> ExceptionHandler
+RegistrationService -.-> ExceptionHandler
+
+' Utilities
+EventService -.-> Logger
+UserService -.-> Logger
+RegistrationService -.-> Logger
+
+EventService -.-> Validator
+UserService -.-> Validator
+RegistrationService -.-> Validator
+
+EventController -.-> DTOMapper
+UserController -.-> DTOMapper
+RegistrationController -.-> DTOMapper
+
+' Configuration
+SecurityChain -.-> SecurityConfig
+EventService -.-> EnvConfig
+UserService -.-> EnvConfig
+
+@enduml

@@ -1,0 +1,343 @@
+@startuml Event_Management_UML_Class
+!theme plain
+
+title Event Management System - UML Class Diagram
+
+enum EventStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  ORGANIZER
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  CANCELLED
+  WAITING_LIST
+  APPROVED
+}
+
+class Event {
+  - id: Long
+  - name: String
+  - description: String
+  - date: LocalDateTime
+  - time: LocalTime
+  - location: String
+  - capacity: Integer
+  - banner: String
+  - logo: String
+  - badge: String
+  - status: EventStatus
+  - additionalFields: Map<String, Object>
+  - createdBy: User
+  - createdAt: LocalDateTime
+  - updatedAt: LocalDateTime
+  --
+  + getId(): Long
+  + getName(): String
+  + getDescription(): String
+  + getDate(): LocalDateTime
+  + getLocation(): String
+  + getCapacity(): Integer
+  + getStatus(): EventStatus
+  + getCreatedBy(): User
+  + setName(String): void
+  + setDescription(String): void
+  + setStatus(EventStatus): void
+}
+
+class User {
+  - id: Long
+  - email: String
+  - name: String
+  - role: UserRole
+  - oauthProvider: String
+  - profilePicture: String
+  - createdAt: LocalDateTime
+  - updatedAt: LocalDateTime
+  --
+  + getId(): Long
+  + getEmail(): String
+  + getName(): String
+  + getRole(): UserRole
+  + setRole(UserRole): void
+  + setProfilePicture(String): void
+  + isAdmin(): boolean
+}
+
+class EventRegistration {
+  - id: Long
+  - event: Event
+  - user: User
+  - status: RegistrationStatus
+  - role: String
+  - registeredAt: LocalDateTime
+  - cancelledAt: LocalDateTime
+  --
+  + getId(): Long
+  + getEvent(): Event
+  + getUser(): User
+  + getStatus(): RegistrationStatus
+  + getRegisteredAt(): LocalDateTime
+  + setStatus(RegistrationStatus): void
+  + cancel(): void
+}
+
+class EventDTO {
+  - id: Long
+  - name: String
+  - description: String
+  - date: LocalDateTime
+  - location: String
+  - capacity: Integer
+  - banner: String
+  - status: EventStatus
+  --
+  + fromEntity(Event): EventDTO
+  + toEntity(): Event
+}
+
+class EventResponseDTO {
+  - id: Long
+  - name: String
+  - description: String
+  - date: LocalDateTime
+  - location: String
+  - registrationCount: Integer
+  - admin: UserDTO
+  - participants: List<UserDTO>
+  --
+  + fromEntity(Event): EventResponseDTO
+}
+
+class UserResponseDTO {
+  - id: Long
+  - email: String
+  - name: String
+  - role: UserRole
+  - profilePicture: String
+  --
+  + fromEntity(User): UserResponseDTO
+}
+
+class CreateUserRequestDTO {
+  - email: String
+  - name: String
+  - oauthProvider: String
+  --
+  + toEntity(): User
+}
+
+class EventRegistrationDTO {
+  - eventId: Long
+  - userId: Long
+  - status: RegistrationStatus
+  --
+  + getEventId(): Long
+  + getUserId(): Long
+  + getStatus(): RegistrationStatus
+}
+
+class EventService {
+  - eventRepository: EventRepository
+  - userRepository: UserRepository
+  - cacheManager: CacheManager
+  --
+  + getAllEvents(): List<Event>
+  + getEventById(Long): Event
+  + createEvent(EventDTO, User): Event
+  + updateEvent(Long, EventDTO, User): Event
+  + deleteEvent(Long, User): void
+  + searchEvents(String): List<Event>
+  + getEventsByUser(Long): List<Event>
+}
+
+class UserService {
+  - userRepository: UserRepository
+  --
+  + getUserById(Long): User
+  + getAllUsers(): List<User>
+  + createUser(CreateUserRequestDTO): User
+  + updateUser(Long, CreateUserRequestDTO): User
+  + deleteUser(Long): void
+  + getUserByEmail(String): User
+}
+
+class EventRegistrationService {
+  - regRepository: EventRegistrationRepository
+  - eventRepository: EventRepository
+  - userRepository: UserRepository
+  --
+  + registerForEvent(EventRegistrationDTO): EventRegistration
+  + cancelRegistration(Long): void
+  + getUserRegistrations(Long): List<EventRegistration>
+  + getEventRegistrations(Long): List<EventRegistration>
+  + checkRegistrationStatus(Long, Long): RegistrationStatus
+  + getRegistrationCount(Long): int
+}
+
+class SessionValidationService {
+  - userRepository: UserRepository
+  - jwtTokenProvider: JwtTokenProvider
+  --
+  + validateUserSession(String): SessionValidationResult
+  + refreshToken(String): String
+  + revokeToken(String): void
+  + getUserFromToken(String): User
+}
+
+class EventController {
+  - eventService: EventService
+  - assembler: EventModelAssembler
+  - userRepository: UserRepository
+  --
+  + getAllEvents(): ResponseEntity
+  + getEventById(Long): ResponseEntity
+  + createEvent(EventDTO, OAuth2User): ResponseEntity
+  + updateEvent(Long, EventDTO, OAuth2User): ResponseEntity
+  + deleteEvent(Long, OAuth2User): ResponseEntity
+  + searchEvents(String): ResponseEntity
+}
+
+class UserController {
+  - userService: UserService
+  - userAssembler: UserModelAssembler
+  --
+  + getUserProfile(Long): ResponseEntity
+  + getAllUsers(): ResponseEntity
+  + createUser(CreateUserRequestDTO): ResponseEntity
+  + updateUser(Long, CreateUserRequestDTO): ResponseEntity
+  + deleteUser(Long): ResponseEntity
+}
+
+class EventRegistrationController {
+  - regService: EventRegistrationService
+  - regAssembler: RegistrationModelAssembler
+  --
+  + registerForEvent(EventRegistrationDTO): ResponseEntity
+  + getUserRegistrations(Long): ResponseEntity
+  + getEventRegistrations(Long): ResponseEntity
+  + cancelRegistration(Long): ResponseEntity
+}
+
+class SessionController {
+  - sessionService: SessionValidationService
+  --
+  + validateSession(SessionRequest): ResponseEntity
+  + refreshSession(TokenRequest): ResponseEntity
+}
+
+interface EventRepository {
+  + findById(Long): Optional<Event>
+  + findAll(): List<Event>
+  + save(Event): Event
+  + delete(Event): void
+  + findByCreatedBy(User): List<Event>
+  + findByStatusAndDate(EventStatus, LocalDateTime): List<Event>
+}
+
+interface UserRepository {
+  + findById(Long): Optional<User>
+  + findAll(): List<User>
+  + save(User): User
+  + delete(User): void
+  + findByEmail(String): Optional<User>
+}
+
+interface EventRegistrationRepository {
+  + findById(Long): Optional<EventRegistration>
+  + findByEventAndUser(Event, User): Optional<EventRegistration>
+  + findByUserId(Long): List<EventRegistration>
+  + findByEventId(Long): List<EventRegistration>
+  + findActiveRegistrations(Long): List<EventRegistration>
+}
+
+class EventNotFoundException {
+  - message: String
+  --
+  + EventNotFoundException(Long)
+  + EventNotFoundException(String)
+  + getMessage(): String
+}
+
+class EventNotFoundAdvice {
+  --
+  + handleEventNotFound(EventNotFoundException): ResponseEntity
+  + handleValidationError(MethodArgumentNotValidException): ResponseEntity
+}
+
+class SecurityConfig {
+  - oauth2UserService: CustomOAuth2UserService
+  --
+  + securityFilterChain(HttpSecurity): SecurityFilterChain
+  + passwordEncoder(): PasswordEncoder
+}
+
+class JwtTokenProvider {
+  - secretKey: String
+  - expiration: Long
+  --
+  + generateToken(User): String
+  + validateToken(String): boolean
+  + getUserIdFromToken(String): Long
+  + getExpirationDateFromToken(String): Date
+}
+
+class CustomOAuth2UserService {
+  - userRepository: UserRepository
+  --
+  + loadUser(OAuth2UserRequest): OAuth2User
+  + processOAuth2User(OAuth2User): void
+}
+
+' Relationships
+Event "1" -- "*" EventRegistration : has
+User "1" -- "*" EventRegistration : has
+User "1" -- "*" Event : creates
+
+EventController --> EventService
+EventController --> EventRepository
+UserController --> UserService
+EventRegistrationController --> EventRegistrationService
+SessionController --> SessionValidationService
+
+EventService --> EventRepository
+EventService --> UserRepository
+UserService --> UserRepository
+EventRegistrationService --> EventRegistrationRepository
+EventRegistrationService --> EventRepository
+EventRegistrationService --> UserRepository
+SessionValidationService --> JwtTokenProvider
+SessionValidationService --> UserRepository
+
+EventDTO <|-- EventResponseDTO
+EventDTO --> Event
+EventResponseDTO --> Event
+EventResponseDTO --> User
+UserResponseDTO --> User
+CreateUserRequestDTO --> User
+EventRegistrationDTO --> Event
+EventRegistrationDTO --> User
+
+EventRepository --> Event
+UserRepository --> User
+EventRegistrationRepository --> EventRegistration
+
+SecurityConfig --> CustomOAuth2UserService
+CustomOAuth2UserService --> UserRepository
+
+EventNotFoundAdvice -.-> EventNotFoundException
+EventService -.-> EventNotFoundException
+
+EventStatus <-- Event
+UserRole <-- User
+RegistrationStatus <-- EventRegistration
+
+@enduml

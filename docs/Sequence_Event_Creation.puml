@@ -1,0 +1,45 @@
+@startuml Event_Creation_Sequence
+title Event Creation Flow - Sequence Diagram
+
+actor User
+participant EventController
+participant EventService
+participant UserRepository
+participant EventRepository
+participant Cache
+participant EventNotFoundAdvice
+database PostgreSQL
+
+User -> EventController: POST /api/events\n(EventDTO, OAuth2User)
+EventController -> EventController: Extract User from OAuth2 Token
+EventController -> UserRepository: findByEmail(userEmail)
+UserRepository -> PostgreSQL: Query User
+PostgreSQL -> UserRepository: Return User
+UserRepository -> EventController: User Object
+
+alt User Not Found
+  EventController -> EventNotFoundAdvice: Handle Exception
+  EventNotFoundAdvice -> User: Return 404 Not Found
+else User Found
+  EventController -> EventService: createEvent(EventDTO, User)
+  EventService -> EventService: Validate Event Data
+  
+  alt Validation Failed
+    EventService -> EventController: Throw ValidationException
+    EventController -> EventNotFoundAdvice: Handle Exception
+    EventNotFoundAdvice -> User: Return 400 Bad Request
+  else Validation Success
+    EventService -> EventRepository: save(newEvent)
+    EventRepository -> PostgreSQL: INSERT INTO events
+    PostgreSQL -> EventRepository: Return Event with ID
+    EventRepository -> EventService: Event Object
+    
+    EventService -> Cache: Put Event in Cache\n(key: "event:" + id)
+    Cache -> EventService: Cache Updated
+    
+    EventService -> EventController: Return Created Event
+    EventController -> User: Return 201 Created\n(EventResponseDTO + HATEOAS Links)
+  end
+end
+
+@enduml

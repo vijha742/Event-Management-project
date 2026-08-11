@@ -1,0 +1,66 @@
+@startuml Event_Registration_Sequence
+title Event Registration Flow - Sequence Diagram
+
+actor User
+participant EventRegistrationController
+participant EventRegistrationService
+participant EventRepository
+participant UserRepository
+participant RegistrationRepository
+participant EmailService
+participant ExceptionHandler
+database PostgreSQL
+
+User -> EventRegistrationController: POST /api/registrations\n(EventRegistrationDTO)
+EventRegistrationController -> EventRegistrationService: registerForEvent(dto)
+
+EventRegistrationService -> EventRepository: findById(eventId)
+EventRepository -> PostgreSQL: Query Event
+PostgreSQL -> EventRepository: Return Event
+EventRepository -> EventRegistrationService: Event Object
+
+alt Event Not Found
+  EventRegistrationService -> ExceptionHandler: Throw EventNotFoundException
+  ExceptionHandler -> User: Return 404 Not Found
+else Event Found
+  EventRegistrationService -> UserRepository: findById(userId)
+  UserRepository -> PostgreSQL: Query User
+  PostgreSQL -> UserRepository: Return User
+  UserRepository -> EventRegistrationService: User Object
+  
+  alt User Not Found
+    EventRegistrationService -> ExceptionHandler: Throw UserNotFoundException
+    ExceptionHandler -> User: Return 404 Not Found
+  else User Found
+    EventRegistrationService -> RegistrationRepository: findByEventAndUser(event, user)
+    RegistrationRepository -> PostgreSQL: Query Existing Registration
+    PostgreSQL -> RegistrationRepository: Return Existing/Null
+    
+    alt Already Registered
+      EventRegistrationService -> ExceptionHandler: Throw DuplicateRegistrationException
+      ExceptionHandler -> User: Return 400 Bad Request
+    else Not Registered Yet
+      EventRegistrationService -> EventRegistrationService: Check Event Capacity
+      
+      alt Event Full
+        EventRegistrationService -> RegistrationRepository: save(EventRegistration with WAITING_LIST)
+        RegistrationRepository -> PostgreSQL: INSERT Registration (Status: WAITING_LIST)
+      else Capacity Available
+        EventRegistrationService -> RegistrationRepository: save(EventRegistration with REGISTERED)
+        RegistrationRepository -> PostgreSQL: INSERT Registration (Status: REGISTERED)
+      end
+      
+      PostgreSQL -> RegistrationRepository: Return Registration with ID
+      RegistrationRepository -> EventRegistrationService: EventRegistration Object
+      
+      EventRegistrationService -> EmailService: sendConfirmationEmail(user, event)
+      EmailService -> User: Send Confirmation Email
+      EmailService -> EventRegistrationService: Email Sent
+      
+      EventRegistrationService -> EventRegistrationController: Return EventRegistration
+      EventRegistrationController -> User: Return 201 Created\n(EventRegistrationDTO + HATEOAS Links)
+    end
+  end
+end
+
+@enduml

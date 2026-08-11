@@ -1,0 +1,135 @@
+@startuml Event_Management_HLD
+!define AWSPUML https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
+!include AWSPUML/AWSCommon.puml
+
+title Event Management System - High-Level Design (HLD)
+
+package "Client Layer" {
+  component [Web Client] as WebClient
+  component [Mobile Client] as MobileClient
+  component [Third-Party Apps] as ThirdParty
+}
+
+package "API Gateway & Security" {
+  component [REST API Gateway] as APIGateway
+  component [OAuth2 Authentication] as OAuth2
+  component [JWT Token Service] as JWTService
+  component [CORS Handler] as CORSHandler
+}
+
+package "Application Layer" {
+  component [Event Controller] as EventCtrl
+  component [User Controller] as UserCtrl
+  component [Session Controller] as SessionCtrl
+  component [Registration Controller] as RegCtrl
+}
+
+package "Business Logic Layer" {
+  component [Event Service] as EventService
+  component [User Service] as UserService
+  component [Registration Service] as RegService
+  component [Session Validation Service] as SessionService
+}
+
+package "Data Persistence Layer" {
+  component [Event Repository] as EventRepo
+  component [User Repository] as UserRepo
+  component [Registration Repository] as RegRepo
+}
+
+package "Database Layer" {
+  database "PostgreSQL\n(Event Management DB)" as PostgreSQL {
+    table "events" as EventTable
+    table "users" as UserTable
+    table "event_registrations" as RegTable
+  }
+}
+
+package "External Services" {
+  component [Google OAuth2] as GoogleOAuth
+  component [Email Service] as EmailService
+  component [File Storage] as FileStorage
+}
+
+package "Cache Layer" {
+  component [Redis Cache] as RedisCache
+}
+
+package "Utilities & Middleware" {
+  component [Exception Handler] as ExceptionHandler
+  component [Logging Service] as LoggingService
+  component [Jackson Config] as JacksonConfig
+}
+
+' Connections
+WebClient --> APIGateway
+MobileClient --> APIGateway
+ThirdParty --> APIGateway
+
+APIGateway --> OAuth2
+APIGateway --> CORSHandler
+
+OAuth2 --> JWTService
+OAuth2 --> GoogleOAuth
+
+APIGateway --> EventCtrl
+APIGateway --> UserCtrl
+APIGateway --> SessionCtrl
+APIGateway --> RegCtrl
+
+EventCtrl --> EventService
+UserCtrl --> UserService
+SessionCtrl --> SessionService
+RegCtrl --> RegService
+
+EventService --> EventRepo
+EventService --> RedisCache
+EventService --> ExceptionHandler
+
+UserService --> UserRepo
+UserService --> ExceptionHandler
+
+RegService --> RegRepo
+RegService --> EmailService
+RegService --> ExceptionHandler
+
+SessionService --> UserRepo
+
+EventRepo --> PostgreSQL
+UserRepo --> PostgreSQL
+RegRepo --> PostgreSQL
+
+EventService --> LoggingService
+UserService --> LoggingService
+RegService --> LoggingService
+
+JacksonConfig -.-> EventCtrl
+JacksonConfig -.-> UserCtrl
+
+note right of EventTable
+  - id (PK)
+  - title, description
+  - date, location
+  - capacity
+  - status
+  - additional_fields (JSONB)
+  - createdBy (FK)
+end note
+
+note right of UserTable
+  - id (PK)
+  - email, name
+  - OAuth provider
+  - profile picture
+  - role (ADMIN/USER)
+end note
+
+note right of RegTable
+  - id (PK)
+  - eventId (FK)
+  - userId (FK)
+  - status
+  - registeredAt
+end note
+
+@enduml
